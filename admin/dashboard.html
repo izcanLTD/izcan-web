@@ -23,8 +23,14 @@
                 <button class="nav-item active" data-tab="products">
                     <i class="fa-solid fa-box-open"></i> Ürünler
                 </button>
+                <button class="nav-item" data-tab="slider">
+                    <i class="fa-solid fa-images"></i> Slider
+                </button>
+                <button class="nav-item" data-tab="gallery">
+                    <i class="fa-solid fa-camera"></i> Galeri
+                </button>
                 <button class="nav-item" data-tab="content">
-                    <i class="fa-solid fa-pen-to-square"></i> İçerik Yönetimi
+                    <i class="fa-solid fa-pen-to-square"></i> Site Metinleri
                 </button>
                 <a href="/" target="_blank" class="nav-item preview-link">
                     <i class="fa-solid fa-eye"></i> Siteyi Görüntüle
@@ -48,6 +54,32 @@
                 <div class="products-grid" id="product-list-admin">
                     <!-- Dynamic Product Cards -->
                     <div class="loading-spinner"></div>
+                </div>
+            </section>
+
+            <!-- Slider Section -->
+            <section id="slider" class="content-section">
+                <div class="section-header">
+                    <h1>Slider Yönetimi</h1>
+                    <button id="open-slider-modal" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Yeni Slayt Ekle
+                    </button>
+                </div>
+                <div class="products-grid" id="slider-list-admin">
+                    <!-- Dynamic Slider Cards -->
+                </div>
+            </section>
+
+            <!-- Gallery Section -->
+            <section id="gallery" class="content-section">
+                <div class="section-header">
+                    <h1>Galeri Yönetimi</h1>
+                    <button id="open-gallery-modal" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Yeni Fotoğraf Ekle
+                    </button>
+                </div>
+                <div class="products-grid" id="gallery-list-admin">
+                    <!-- Dynamic Gallery Cards -->
                 </div>
             </section>
 
@@ -131,6 +163,52 @@
                 <div class="form-group">
                     <label>Kısa Açıklama</label>
                     <textarea id="prod-desc" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-primary full-width">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Slider Modal -->
+    <div id="slider-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Yeni Slayt Ekle</h2>
+            <form id="add-slider-form">
+                <div class="form-group">
+                    <label>Görsel Seç (1920x1080 önerilir)</label>
+                    <input type="file" id="slider-image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>Başlık</label>
+                    <input type="text" id="slider-title" placeholder="Örn: Kapı Modelleri">
+                </div>
+                <div class="form-group">
+                    <label>Alt Başlık</label>
+                    <input type="text" id="slider-subtitle" placeholder="Kısa açıklama...">
+                </div>
+                <div class="form-group">
+                    <label>Sıra No</label>
+                    <input type="number" id="slider-order" value="0">
+                </div>
+                <button type="submit" class="btn-primary full-width">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Gallery Modal -->
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Galeriye Fotoğraf Ekle</h2>
+            <form id="add-gallery-form">
+                <div class="form-group">
+                    <label>Görsel Seç</label>
+                    <input type="file" id="gallery-image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>Açıklama (Opsiyonel)</label>
+                    <input type="text" id="gallery-caption">
                 </div>
                 <button type="submit" class="btn-primary full-width">Kaydet</button>
             </form>
