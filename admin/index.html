@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İzcan Admin - Giriş</title>
+    <link rel="stylesheet" href="../style.css"> <!-- Reuse main styles -->
+    <link rel="stylesheet" href="./admin.css">
+</head>
+
+<body class="bg-darker">
+    <div class="admin-login-container">
+        <div class="login-box">
+            <h2 class="text-gold text-center mb-4">Yönetici Paneli</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" id="email" required placeholder="admin@izcan.com">
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" id="password" required placeholder="******">
+                </div>
+                <button type="submit" class="btn btn-primary full-width">Giriş Yap</button>
+                <div id="error-msg" class="text-center mt-3 text-red"></div>
+            </form>
+        </div>
+    </div>
+    <script type="module" src="./login.js"></script>
+</body>
+
+</html>

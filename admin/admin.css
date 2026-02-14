@@ -1,0 +1,122 @@
+/* Admin Specific Styles */
+.admin-login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-box {
+    background: var(--color-surface);
+    padding: 3rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-red {
+    color: #ff4444;
+}
+
+.admin-nav {
+    background: var(--color-surface-light);
+    border-bottom: 1px solid #333;
+    padding: 1rem 0;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+}
+
+.tab-btn {
+    background: none;
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s;
+}
+
+.tab-btn.active {
+    color: var(--color-gold);
+    border-bottom: 2px solid var(--color-gold);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.card {
+    background: var(--color-surface);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.product-list-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-prod-card {
+    background: var(--color-surface-light);
+    padding: 1rem;
+    border-radius: 4px;
+    position: relative;
+}
+
+.admin-prod-card img {
+    height: 150px;
+    width: 100%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border-radius: 2px;
+}
+
+.admin-prod-delete {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+input[type="file"] {
+    background: #121212;
+    padding: 0.5rem;
+    width: 100%;
+    color: white;
+}
