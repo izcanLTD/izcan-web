@@ -2,9 +2,7 @@ import { supabase } from '../src/supabase.js';
 
 // Auth Check
 const { data: { user } } = await supabase.auth.getUser();
-if (!user) {
-    window.location.href = './index.html';
-}
+if (!user) window.location.href = './index.html';
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
     await supabase.auth.signOut();
@@ -19,7 +17,6 @@ navItems.forEach(item => {
     item.addEventListener('click', () => {
         navItems.forEach(n => n.classList.remove('active'));
         sections.forEach(s => s.classList.remove('active'));
-
         item.classList.add('active');
         document.getElementById(item.dataset.tab).classList.add('active');
     });
@@ -31,7 +28,12 @@ function setupModal(modalId, openBtnId) {
     const openBtn = document.getElementById(openBtnId);
     const closeBtn = modal.querySelector('.close-modal');
 
-    if (openBtn) openBtn.addEventListener('click', () => modal.classList.add('show'));
+    if (openBtn) openBtn.addEventListener('click', () => {
+        if (modalId === 'slider-modal') resetSliderForm();
+        if (modalId === 'gallery-modal') resetGalleryForm();
+        modal.classList.add('show');
+    });
+
     if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('show'));
     window.addEventListener('click', (e) => {
         if (e.target === modal) modal.classList.remove('show');
@@ -43,48 +45,34 @@ const prodModal = setupModal('product-modal', 'open-add-modal');
 const sliderModal = setupModal('slider-modal', 'open-slider-modal');
 const galleryModal = setupModal('gallery-modal', 'open-gallery-modal');
 
-/* --- Products Logic --- */
-const productList = document.getElementById('product-list-admin');
-const addProductForm = document.getElementById('add-product-form');
-
-async function loadProducts() {
-    if (!productList) return;
-    productList.innerHTML = '<div class="loading-spinner"></div>';
-
-    const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-
-    if (error) { console.error(error); return; }
-
-    productList.innerHTML = '';
-    data.forEach(prod => {
-        const div = document.createElement('div');
-        div.className = 'product-card';
-        div.innerHTML = `
-            <button class="delete-btn" data-id="${prod.id}" data-type="products"><i class="fa-solid fa-trash"></i></button>
-            <img src="${prod.image_url}" alt="${prod.title}">
-            <div class="card-details">
-                <h3>${prod.title}</h3>
-                <p>${prod.category}</p>
-            </div>
-        `;
-        productList.appendChild(div);
-    });
-}
-
-if (addProductForm) {
-    addProductForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await handleGenericSubmit(e, 'products', prodModal, loadProducts, {
-            title: document.getElementById('prod-title').value,
-            category: document.getElementById('prod-category').value,
-            description: document.getElementById('prod-desc').value,
-        }, 'prod-image');
-    });
-}
-
-/* --- Slider Logic --- */
+/* ---------------- SLIDER LOGIC ---------------- */
 const sliderList = document.getElementById('slider-list-admin');
 const addSliderForm = document.getElementById('add-slider-form');
+const sliderTypeSelect = document.getElementById('slider-type');
+const groupImage = document.getElementById('group-image');
+const groupVideo = document.getElementById('group-video');
+
+if (sliderTypeSelect) {
+    sliderTypeSelect.addEventListener('change', (e) => {
+        if (e.target.value === 'video') {
+            groupImage.classList.add('hidden');
+            groupVideo.classList.remove('hidden');
+        } else {
+            groupImage.classList.remove('hidden');
+            groupVideo.classList.add('hidden');
+        }
+    });
+}
+
+function resetSliderForm() {
+    addSliderForm.reset();
+    document.getElementById('slider-id').value = '';
+    document.getElementById('slider-modal-title').textContent = 'Yeni Slayt Ekle';
+    document.getElementById('current-image-text').textContent = '';
+    document.getElementById('current-video-text').textContent = '';
+    groupImage.classList.remove('hidden');
+    groupVideo.classList.add('hidden');
+}
 
 async function loadSlider() {
     if (!sliderList) return;
@@ -98,32 +86,138 @@ async function loadSlider() {
     data.forEach(slide => {
         const div = document.createElement('div');
         div.className = 'product-card';
+
+        let thumbnail = slide.image_url;
+        if (slide.media_type === 'video') {
+            thumbnail = 'https://via.placeholder.com/300x200?text=VIDEO';
+        }
+
         div.innerHTML = `
-            <button class="delete-btn" data-id="${slide.id}" data-type="slides"><i class="fa-solid fa-trash"></i></button>
-            <img src="${slide.image_url}" alt="${slide.title}">
+            <div class="card-actions" style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+                <button class="edit-btn user-select-none" data-id="${slide.id}" data-type="slides"><i class="fa-solid fa-pen"></i></button>
+                <button class="delete-btn user-select-none" data-id="${slide.id}" data-type="slides"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <img src="${thumbnail}" alt="${slide.title}">
             <div class="card-details">
                 <h3>${slide.title || 'Başlıksız'}</h3>
-                <p>Sıra: ${slide.display_order}</p>
+                <p>Tip: ${slide.media_type || 'image'} | Sıra: ${slide.display_order}</p>
             </div>
         `;
         sliderList.appendChild(div);
     });
 }
 
+// Edit Slide
+async function openEditSlide(id) {
+    const { data, error } = await supabase.from('slides').select('*').eq('id', id).single();
+    if (error) { alert('Hata: ' + error.message); return; }
+
+    document.getElementById('slider-id').value = data.id;
+    document.getElementById('slider-title').value = data.title || '';
+    document.getElementById('slider-subtitle').value = data.subtitle || '';
+    document.getElementById('slider-order').value = data.display_order || 0;
+    document.getElementById('slider-modal-title').textContent = 'Slayt Düzenle';
+
+    sliderTypeSelect.value = data.media_type || 'image';
+    sliderTypeSelect.dispatchEvent(new Event('change'));
+
+    if (data.media_type === 'image') {
+        document.getElementById('current-image-text').textContent = 'Mevcut: ' + data.image_url?.split('/').pop();
+    } else {
+        document.getElementById('current-image-text').textContent = '';
+        if (data.video_url) {
+            document.getElementById('current-video-text').textContent = 'Mevcut Video: ' + data.video_url.split('/').pop();
+        }
+    }
+    sliderModal.classList.add('show');
+}
+
 if (addSliderForm) {
     addSliderForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        await handleGenericSubmit(e, 'slides', sliderModal, loadSlider, {
-            title: document.getElementById('slider-title').value,
-            subtitle: document.getElementById('slider-subtitle').value,
-            display_order: document.getElementById('slider-order').value,
-        }, 'slider-image');
+        const submitBtn = addSliderForm.querySelector('button');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Kaydediliyor...';
+
+        try {
+            const id = document.getElementById('slider-id').value;
+            const type = sliderTypeSelect.value;
+            const title = document.getElementById('slider-title').value;
+            const subtitle = document.getElementById('slider-subtitle').value;
+            const order = document.getElementById('slider-order').value;
+            const imageFile = document.getElementById('slider-image').files[0];
+            const videoFile = document.getElementById('slider-video').files[0];
+
+            let updates = { title, subtitle, display_order: order, media_type: type };
+
+            if (type === 'image' && imageFile) {
+                const path = `${Date.now()}_${imageFile.name}`;
+                const { error } = await supabase.storage.from('images').upload(path, imageFile);
+                if (error) throw error;
+                const { data } = supabase.storage.from('images').getPublicUrl(path);
+                updates.image_url = data.publicUrl;
+                updates.video_url = null;
+            }
+
+            if (type === 'video' && videoFile) {
+                if (videoFile.size > 50 * 1024 * 1024) throw new Error('Video 50MB\'dan küçük olmalıdır.');
+                const path = `videos/${Date.now()}_${videoFile.name}`;
+                const { error } = await supabase.storage.from('images').upload(path, videoFile);
+                if (error) throw error;
+                const { data } = supabase.storage.from('images').getPublicUrl(path);
+                updates.video_url = data.publicUrl;
+            }
+
+            if (type === 'video' && !updates.image_url && !id) {
+                updates.image_url = 'https://placehold.co/1920x1080/000000/FFFFFF?text=Video';
+            }
+
+            if (id) {
+                const { error } = await supabase.from('slides').update(updates).eq('id', id);
+                if (error) throw error;
+                alert('Güncellendi!');
+            } else {
+                if (type === 'image' && !updates.image_url) throw new Error('Resim seçmelisiniz.');
+                if (type === 'video' && !updates.video_url) throw new Error('Video seçmelisiniz.');
+                const { error } = await supabase.from('slides').insert([updates]);
+                if (error) throw error;
+                alert('Eklendi!');
+            }
+
+            resetSliderForm();
+            sliderModal.classList.remove('show');
+            loadSlider();
+        } catch (err) { alert('Hata: ' + err.message); }
+        finally { submitBtn.disabled = false; submitBtn.textContent = 'Kaydet'; }
     });
 }
 
-/* --- Gallery Logic --- */
+/* ---------------- GALLERY LOGIC ---------------- */
 const galleryList = document.getElementById('gallery-list-admin');
 const addGalleryForm = document.getElementById('add-gallery-form');
+const galleryTypeSelect = document.getElementById('gallery-type');
+const galleryGroupImage = document.getElementById('gallery-group-image');
+const galleryGroupVideo = document.getElementById('gallery-group-video');
+
+if (galleryTypeSelect) {
+    galleryTypeSelect.addEventListener('change', (e) => {
+        if (e.target.value === 'video') {
+            galleryGroupImage.classList.add('hidden');
+            galleryGroupVideo.classList.remove('hidden');
+        } else {
+            galleryGroupImage.classList.remove('hidden');
+            galleryGroupVideo.classList.add('hidden');
+        }
+    });
+}
+
+function resetGalleryForm() {
+    addGalleryForm.reset();
+    document.getElementById('gallery-id').value = '';
+    document.getElementById('gallery-modal-title').textContent = 'Galeriye Ekle';
+    galleryGroupImage.classList.remove('hidden');
+    galleryGroupVideo.classList.add('hidden');
+}
 
 async function loadGallery() {
     if (!galleryList) return;
@@ -137,10 +231,23 @@ async function loadGallery() {
     data.forEach(item => {
         const div = document.createElement('div');
         div.className = 'product-card';
+
+        // Render content
+        let contentHtml = '';
+        if (item.media_type === 'video') {
+            // For Admin preview, maybe just a video tag or placeholder
+            contentHtml = `<video src="${item.video_url}" muted style="width:100%;height:100%;object-fit:cover;"></video>`;
+        } else {
+            contentHtml = `<img src="${item.image_url}" alt="Gallery">`;
+        }
+
         div.innerHTML = `
-            <button class="delete-btn" data-id="${item.id}" data-type="gallery"><i class="fa-solid fa-trash"></i></button>
-            <img src="${item.image_url}" alt="Gallery">
+            <div class="card-actions" style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index:10;">
+                <button class="delete-btn" data-id="${item.id}" data-type="gallery"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            ${contentHtml}
              <div class="card-details">
+                <p>Tip: ${item.media_type || 'image'}</p>
                 <p>${item.caption || ''}</p>
             </div>
         `;
@@ -151,104 +258,115 @@ async function loadGallery() {
 if (addGalleryForm) {
     addGalleryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        await handleGenericSubmit(e, 'gallery', galleryModal, loadGallery, {
-            caption: document.getElementById('gallery-caption').value,
-        }, 'gallery-image');
+        const submitBtn = addGalleryForm.querySelector('button');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Kaydediliyor...';
+
+        try {
+            const id = document.getElementById('gallery-id').value;
+            const type = galleryTypeSelect.value;
+            const caption = document.getElementById('gallery-caption').value;
+            const imageFile = document.getElementById('gallery-image').files[0];
+            const videoFile = document.getElementById('gallery-video').files[0];
+
+            let updates = { caption, media_type: type };
+
+            if (type === 'image' && imageFile) {
+                const path = `gallery/${Date.now()}_${imageFile.name}`;
+                const { error } = await supabase.storage.from('images').upload(path, imageFile);
+                if (error) throw error;
+                const { data } = supabase.storage.from('images').getPublicUrl(path);
+                updates.image_url = data.publicUrl;
+                updates.video_url = null;
+            }
+
+            if (type === 'video' && videoFile) {
+                if (videoFile.size > 50 * 1024 * 1024) throw new Error('Video 50MB\'dan küçük olmalıdır.');
+                const path = `gallery_videos/${Date.now()}_${videoFile.name}`;
+                const { error } = await supabase.storage.from('images').upload(path, videoFile);
+                if (error) throw error;
+                const { data } = supabase.storage.from('images').getPublicUrl(path);
+                updates.video_url = data.publicUrl;
+            }
+
+            if (type === 'video' && !updates.image_url && !id) {
+                updates.image_url = 'https://placehold.co/600x600/000000/FFFFFF?text=Video';
+            }
+
+            // Insert Only (Edit for gallery usually just caption, but we keep simple)
+            if (type === 'image' && !updates.image_url) throw new Error('Resim seçmelisiniz.');
+            if (type === 'video' && !updates.video_url) throw new Error('Video seçmelisiniz.');
+
+            const { error } = await supabase.from('gallery').insert([updates]);
+            if (error) throw error;
+            alert('Eklendi!');
+
+            resetGalleryForm();
+            galleryModal.classList.remove('show');
+            loadGallery();
+        } catch (err) { alert('Hata: ' + err.message); }
+        finally { submitBtn.disabled = false; submitBtn.textContent = 'Kaydet'; }
     });
 }
 
-/* --- Shared Helpers --- */
-async function handleGenericSubmit(e, table, modalRef, refreshFn, extraData, fileInputId) {
-    const file = document.getElementById(fileInputId).files[0];
-    const submitBtn = e.target.querySelector('button');
-
-    if (!file) { alert('Görsel seçmelisiniz.'); return; }
-
-    submitBtn.textContent = 'Yükleniyor...';
-    submitBtn.disabled = true;
-
-    try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { error: uploadError } = await supabase.storage.from('images').upload(filePath, file);
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage.from('images').getPublicUrl(filePath);
-
-        const { error: insertError } = await supabase.from(table).insert([{
-            ...extraData,
-            image_url: publicUrl
-        }]);
-
-        if (insertError) throw insertError;
-
-        alert('Başarıyla eklendi!');
-        e.target.reset();
-        modalRef.classList.remove('show');
-        refreshFn();
-
-    } catch (err) {
-        alert('Hata: ' + err.message);
-    } finally {
-        submitBtn.textContent = 'Kaydet';
-        submitBtn.disabled = false;
-    }
-}
-
-// Global Delete Handler
+/* ---------------- GLOBAL EVENTS ---------------- */
 document.addEventListener('click', async (e) => {
-    if (e.target.closest('.delete-btn')) {
-        const btn = e.target.closest('.delete-btn');
-        const id = btn.dataset.id;
-        const type = btn.dataset.type; // products, slides, gallery
+    // Edit
+    const editBtn = e.target.closest('.edit-btn');
+    if (editBtn) {
+        const type = editBtn.dataset.type;
+        const id = editBtn.dataset.id;
+        if (type === 'slides') openEditSlide(id);
+    }
 
+    // Delete
+    const delBtn = e.target.closest('.delete-btn');
+    if (delBtn) {
+        const id = delBtn.dataset.id;
+        const type = delBtn.dataset.type;
         if (confirm('Silmek istediğinize emin misiniz?')) {
             const { error } = await supabase.from(type).delete().eq('id', id);
             if (!error) {
                 if (type === 'products') loadProducts();
                 if (type === 'slides') loadSlider();
                 if (type === 'gallery') loadGallery();
-            } else {
-                alert('Silme hatası: ' + error.message);
-            }
+            } else { alert('Hata: ' + error.message); }
         }
     }
 });
 
-/* --- Content Logic --- */
-const contentForm = document.getElementById('content-form');
-const saveContentBtn = document.getElementById('save-content-btn');
-
-async function loadContent() {
-    const { data, error } = await supabase.from('site_content').select('*');
-    if (!error && data) {
-        data.forEach(item => {
-            const el = document.getElementsByName(item.key)[0];
-            if (el) el.value = item.value;
-        });
-    }
+/* --- Initialize Other Sections --- */
+async function loadProducts() {
+    const productList = document.getElementById('product-list-admin');
+    if (!productList) return;
+    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    productList.innerHTML = '';
+    data?.forEach(prod => {
+        productList.innerHTML += `
+            <div class="product-card">
+                 <button class="delete-btn" data-id="${prod.id}" data-type="products"><i class="fa-solid fa-trash"></i></button>
+                 <img src="${prod.image_url}" alt="${prod.title}">
+                 <div class="card-details"><h3>${prod.title}</h3></div>
+            </div>`;
+    });
 }
 
-if (saveContentBtn && contentForm) {
-    saveContentBtn.addEventListener('click', async () => {
-        saveContentBtn.disabled = true;
-        saveContentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
-
+/* --- Content Logic --- */
+const contentForm = document.getElementById('content-form');
+if (contentForm) {
+    document.getElementById('save-content-btn').addEventListener('click', async () => {
         const formData = new FormData(contentForm);
         const updates = [];
-
         for (let [key, value] of formData.entries()) {
             updates.push({ key, value, section: key.split('_')[0] });
         }
-
-        const { error } = await supabase.from('site_content').upsert(updates);
-        if (error) alert('Hata: ' + error.message);
-        else setTimeout(() => alert('Kaydedildi!'), 100);
-
-        saveContentBtn.disabled = false;
-        saveContentBtn.innerHTML = '<i class="fa-solid fa-save"></i> Değişiklikleri Kaydet';
+        await supabase.from('site_content').upsert(updates);
+        alert('Kaydedildi!');
+    });
+    const { data } = await supabase.from('site_content').select('*');
+    data?.forEach(item => {
+        const el = document.getElementsByName(item.key)[0];
+        if (el) el.value = item.value;
     });
 }
 
@@ -256,4 +374,3 @@ if (saveContentBtn && contentForm) {
 loadProducts();
 loadSlider();
 loadGallery();
-loadContent();

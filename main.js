@@ -5,10 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupMobileMenu();
     setupHeaderScroll();
 
-    // 1. Load Texts
     await loadContent();
-
-    // 2. Load Dynamic Components
     await loadSlider();
     await loadProducts();
     await loadGallery();
@@ -34,8 +31,6 @@ async function loadContent() {
             const elementId = keyMap[item.key];
             if (elementId) {
                 const el = document.getElementById(elementId);
-                // HTML rendering allowed for specific keys if needed, but be careful with XSS
-                // For now innerHTML is used to allow <span class="text-gold">
                 if (el) el.innerHTML = item.value;
             }
         });
@@ -47,7 +42,6 @@ async function loadSlider() {
     const sliderContainer = document.querySelector('.slider-container');
     if (!sliderContainer) return;
 
-    // Remove existing static slides (keep controls)
     const controls = sliderContainer.querySelector('.slider-controls');
 
     const { data: slides, error } = await supabase
@@ -56,22 +50,30 @@ async function loadSlider() {
         .order('display_order', { ascending: true });
 
     if (error || !slides || slides.length === 0) {
-        console.warn('No slides found or error loading slides, keeping static fallback if any.');
-        // If data is empty, we might want to keep static HTML or show a default.
-        // For now, we assume if we have data, we replace.
-        initSliderLogic(); // Init on existing static content
+        initSliderLogic();
         return;
     }
 
-    // Clear slides, keep controls
     sliderContainer.innerHTML = '';
 
     slides.forEach((slide, index) => {
         const slideDiv = document.createElement('div');
         slideDiv.className = `slide ${index === 0 ? 'active' : ''}`;
-        slideDiv.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${slide.image_url}')`;
+
+        let backgroundHtml = '';
+        if (slide.media_type === 'video' && slide.video_url) {
+            backgroundHtml = `
+                <video autoplay muted loop playsinline class="slide-video">
+                    <source src="${slide.video_url}" type="video/mp4">
+                </video>
+                <div class="overlay"></div>
+            `;
+        } else {
+            slideDiv.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${slide.image_url}')`;
+        }
 
         slideDiv.innerHTML = `
+            ${backgroundHtml}
             <div class="container slide-content">
                 <h1>${slide.title || ''}</h1>
                 <p>${slide.subtitle || ''}</p>
@@ -85,7 +87,6 @@ async function loadSlider() {
 
     if (controls) sliderContainer.appendChild(controls);
     else {
-        // Re-add controls if they were lost
         sliderContainer.innerHTML += `
             <div class="slider-controls">
                 <button class="prev-slide">❮</button>
@@ -94,7 +95,6 @@ async function loadSlider() {
         `;
     }
 
-    // Initialize logic AFTER adding elements
     initSliderLogic();
 }
 
@@ -103,7 +103,7 @@ function initSliderLogic() {
     const prevBtn = document.querySelector('.prev-slide');
     const nextBtn = document.querySelector('.next-slide');
     let currentSlide = 0;
-    const slideInterval = 5000;
+    const slideInterval = 8000;
 
     if (!slides.length) return;
 
@@ -117,7 +117,6 @@ function initSliderLogic() {
     function prevSlide() { showSlide(currentSlide - 1); }
 
     if (nextBtn) {
-        // Remove old listeners to prevent duplicates if re-init
         const newNext = nextBtn.cloneNode(true);
         nextBtn.parentNode.replaceChild(newNext, nextBtn);
         newNext.addEventListener('click', () => { nextSlide(); resetTimer(); });
@@ -135,69 +134,49 @@ function initSliderLogic() {
 
 /* --- PRODUCTS --- */
 async function loadProducts() {
-    const { data: products, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(8);
-
-    if (!error && products && products.length > 0) {
-        const grid = document.querySelector('.product-grid');
-        if (grid) {
-            grid.innerHTML = '';
-            products.forEach(prod => {
-                const div = document.createElement('div');
-                div.className = 'product-card';
-                div.innerHTML = `
+    const { data: products } = await supabase.from('products').select('*').order('created_at', { ascending: false }).limit(8);
+    const grid = document.querySelector('.product-grid');
+    if (grid && products) {
+        grid.innerHTML = '';
+        products.forEach(prod => {
+            grid.innerHTML += `
+                <div class="product-card">
                     <div class="card-image"><img src="${prod.image_url}" alt="${prod.title}"></div>
                     <div class="card-content">
                         <h3>${prod.title}</h3>
                         <p>${prod.category}</p>
                         <a href="#" class="link-arrow">İncele →</a>
                     </div>
-                `;
-                grid.appendChild(div);
-            });
-        }
+                </div>`;
+        });
     }
 }
 
 /* --- GALLERY --- */
 async function loadGallery() {
-    const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false }).limit(8);
-
-    if (!error && data && data.length > 0) {
-        const grid = document.querySelector('.gallery-grid');
-        if (grid) {
-            grid.innerHTML = '';
-            data.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = `gallery-item item-${index + 1}`;
-                div.innerHTML = `<img src="${item.image_url}" alt="${item.caption || 'Gallery Image'}">`;
-                grid.appendChild(div);
-            });
-        }
+    const { data } = await supabase.from('gallery').select('*').order('created_at', { ascending: false }).limit(8);
+    const grid = document.querySelector('.gallery-grid');
+    if (grid && data) {
+        grid.innerHTML = '';
+        data.forEach((item, index) => {
+            let content = '';
+            if (item.media_type === 'video' && item.video_url) {
+                content = `<video src="${item.video_url}" muted loop onmouseover="this.play()" onmouseout="this.pause()" style="width:100%;height:100%;object-fit:cover;"></video>`;
+            } else {
+                content = `<img src="${item.image_url}" alt="${item.caption || 'Gallery Image'}">`;
+            }
+            grid.innerHTML += `<div class="gallery-item item-${index + 1}">${content}</div>`;
+        });
     }
 }
 
 /* --- UTILS --- */
-function setupMobileMenu() {
+function setupMobileMenu() { /* Same */
     const toggle = document.getElementById('mobile-toggle');
     const menu = document.getElementById('nav-menu');
-    const links = menu.querySelectorAll('.nav-link');
-
     if (toggle && menu) {
-        toggle.addEventListener('click', () => {
-            menu.classList.toggle('open');
-            toggle.textContent = menu.classList.contains('open') ? '✕' : '☰';
-        });
-
-        links.forEach(link => {
-            link.addEventListener('click', () => {
-                menu.classList.remove('open');
-                toggle.textContent = '☰';
-            });
-        });
+        toggle.addEventListener('click', () => { menu.classList.toggle('open'); });
+        menu.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => menu.classList.remove('open')));
     }
 }
 
@@ -220,7 +199,5 @@ function setupIntersectionObserver() {
             }
         });
     }, { threshold: 0.1 });
-
-    const elements = document.querySelectorAll('.product-card, .section-title, .about-text');
-    elements.forEach(el => observer.observe(el));
+    document.querySelectorAll('.product-card, .section-title').forEach(el => observer.observe(el));
 }

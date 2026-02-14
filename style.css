@@ -5,21 +5,12 @@
 :root {
     /* Colors */
     --color-primary: #121212;
-    /* Deep Black/Grey */
     --color-surface: #1e1e1e;
-    /* Dark Grey Surface */
     --color-surface-light: #2a2a2a;
-    /* Lighter Surface */
-
     --color-gold: #d4af37;
-    /* Matte Gold */
     --color-gold-hover: #e5c158;
-
     --color-wood: #8b5a2b;
-    /* Natural Wood - Accent */
     --color-accent-blue: #2c3e50;
-    /* Deep Blue */
-
     --color-text-main: #f5f5f5;
     --color-text-muted: #a0a0a0;
     --color-text-dark: #1a1a1a;
@@ -58,7 +49,6 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     display: block;
-    /* Fixed: Was flex causing overlap */
 }
 
 a {
@@ -122,6 +112,14 @@ button {
     font-weight: 300;
 }
 
+.hidden-desktop {
+    display: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -156,10 +154,6 @@ button {
 .btn-outline:hover {
     background-color: var(--color-text-main);
     color: var(--color-primary);
-}
-
-.hidden-desktop {
-    display: none;
 }
 
 /* Header */
@@ -277,6 +271,29 @@ button {
     opacity: 1;
 }
 
+.slide-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100vh;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.slide .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 5;
+}
+
 .slide-content {
     position: relative;
     z-index: 10;
@@ -331,11 +348,17 @@ button {
     right: 20px;
 }
 
-/* Product Grid */
+/* Products & Gallery Grids */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
 }
 
 .product-card {
@@ -391,7 +414,26 @@ button {
     align-items: center;
 }
 
-/* About Section */
+.gallery-item {
+    height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-item img,
+.gallery-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.gallery-item:hover img,
+.gallery-item:hover video {
+    transform: scale(1.05);
+}
+
+/* About */
 .about-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -419,10 +461,6 @@ button {
     color: var(--color-text-muted);
 }
 
-.about-image {
-    position: relative;
-}
-
 .experience-badge {
     position: absolute;
     bottom: -20px;
@@ -445,30 +483,6 @@ button {
 .experience-badge .text {
     font-size: 0.8rem;
     text-transform: uppercase;
-}
-
-/* Gallery */
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-}
-
-.gallery-item {
-    height: 300px;
-    position: relative;
-    overflow: hidden;
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.gallery-item:hover img {
-    transform: scale(1.05);
 }
 
 /* Contact */
@@ -577,7 +591,7 @@ button {
     }
 }
 
-/* Responsive Queries */
+/* Responsive */
 @media (max-width: 992px) {
     .hero-btns {
         flex-direction: column;

@@ -169,16 +169,34 @@
         </div>
     </div>
 
-    <!-- Add Slider Modal -->
+    <!-- Add/Edit Slider Modal -->
     <div id="slider-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Yeni Slayt Ekle</h2>
+            <h2 id="slider-modal-title">Yeni Slayt Ekle</h2>
             <form id="add-slider-form">
+                <input type="hidden" id="slider-id"> <!-- Hidden ID for Edit Mode -->
+
                 <div class="form-group">
-                    <label>Görsel Seç (1920x1080 önerilir)</label>
-                    <input type="file" id="slider-image" accept="image/*" required>
+                    <label>Medya Türü</label>
+                    <select id="slider-type">
+                        <option value="image">Resim</option>
+                        <option value="video">Video</option>
+                    </select>
                 </div>
+
+                <div class="form-group" id="group-image">
+                    <label>Görsel Seç</label>
+                    <input type="file" id="slider-image" accept="image/*">
+                    <p class="text-muted text-sm" id="current-image-text"></p>
+                </div>
+
+                <div class="form-group hidden" id="group-video">
+                    <label>Video Dosyası Seç (MP4, WebM - Max 20MB)</label>
+                    <input type="file" id="slider-video" accept="video/mp4,video/webm">
+                    <p class="text-muted text-sm" id="current-video-text"></p>
+                </div>
+
                 <div class="form-group">
                     <label>Başlık</label>
                     <input type="text" id="slider-title" placeholder="Örn: Kapı Modelleri">
@@ -196,16 +214,34 @@
         </div>
     </div>
 
-    <!-- Add Gallery Modal -->
+    <!-- Add/Edit Gallery Modal -->
     <div id="gallery-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Galeriye Fotoğraf Ekle</h2>
+            <h2 id="gallery-modal-title">Galeriye Ekle</h2>
             <form id="add-gallery-form">
+                <input type="hidden" id="gallery-id">
+
                 <div class="form-group">
-                    <label>Görsel Seç</label>
-                    <input type="file" id="gallery-image" accept="image/*" required>
+                    <label>Medya Türü</label>
+                    <select id="gallery-type">
+                        <option value="image">Resim</option>
+                        <option value="video">Video</option>
+                    </select>
                 </div>
+
+                <div class="form-group" id="gallery-group-image">
+                    <label>Görsel Seç</label>
+                    <input type="file" id="gallery-image" accept="image/*">
+                    <p class="text-muted text-sm" id="gallery-current-image"></p>
+                </div>
+
+                <div class="form-group hidden" id="gallery-group-video">
+                    <label>Video Seç</label>
+                    <input type="file" id="gallery-video" accept="video/mp4,video/webm">
+                    <p class="text-muted text-sm" id="gallery-current-video"></p>
+                </div>
+
                 <div class="form-group">
                     <label>Açıklama (Opsiyonel)</label>
                     <input type="text" id="gallery-caption">
