@@ -1,240 +1,139 @@
 <!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="İzcan Orman Ürünleri - Modern kapı, dolap kapakları ve mobilya aksesuarları üreticisi." />
-    <title>İzcan Orman Ürünleri | Kapı ve Mobilya Çözümleri</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <!-- Header -->
-    <header class="header" id="header">
-      <div class="container">
-        <a href="#" class="logo">
-          İZCAN
-          <span>ORMAN ÜRÜNLERİ</span>
-        </a>
-        <nav class="nav-menu" id="nav-menu">
-          <a href="#home" class="nav-link active">Ana Sayfa</a>
-          <a href="#products" class="nav-link">Ürünler</a>
-          <a href="#catalog" class="nav-link">Katalog</a>
-          <a href="#about" class="nav-link">Hakkımızda</a>
-          <a href="#gallery" class="nav-link">Galeri</a>
-          <a href="#contact" class="nav-link">İletişim</a>
-          <button class="btn btn-primary hidden-desktop">Teklif Al</button>
-        </nav>
-        <div class="header-actions">
-           <button class="btn btn-primary show-desktop">Teklif Al</button>
-           <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">☰</button>
-        </div>
-      </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-      <div class="slider-container">
-        <!-- Slide 1 -->
-        <div class="slide active" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?q=80&w=1920&auto=format&fit=crop');">
-          <div class="container slide-content">
-            <h1>Kapı ve Mobilya Çözümlerinde <span class="text-gold">Güvenilir Üretici</span></h1>
-            <p>Modern tasarım, yüksek kalite ve güçlü üretim altyapısı ile mekanlarınıza değer katıyoruz.</p>
-            <div class="hero-btns">
-              <a href="#catalog" class="btn btn-primary">Kataloğu İncele</a>
-              <a href="#contact" class="btn btn-outline">İletişime Geç</a>
-            </div>
-          </div>
-        </div>
-        <!-- Slide 2 -->
-        <div class="slide" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?q=80&w=1920&auto=format&fit=crop');">
-          <div class="container slide-content">
-            <h1>Özgün Tasarım <span class="text-gold">Dolap Kapakları</span></h1>
-            <p>Evinizin tarzını yansıtan özel üretim dolap kapakları ve panel sistemleri.</p>
-            <div class="hero-btns">
-              <a href="#products" class="btn btn-primary">Ürünleri Gör</a>
-            </div>
-          </div>
-        </div>
-        <!-- Slide Controls -->
-        <div class="slider-controls">
-          <button class="prev-slide">❮</button>
-          <button class="next-slide">❯</button>
-        </div>
-      </div>
-    </section>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="İzcan Orman Ürünleri - Modern kapı, dolap kapakları ve mobilya aksesuarları üreticisi." />
+  <title>İzcan Orman Ürünleri | Kapı ve Mobilya Çözümleri</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
 
-    <!-- Products / Categories -->
-    <section id="products" class="section bg-dark">
-      <div class="container">
-        <h2 class="section-title text-center">Ürün Gruplarımız</h2>
-        <p class="section-subtitle text-center">Kalite ve estetiğin buluştuğu geniş ürün yelpazemiz</p>
-        
-        <div class="product-grid">
-          <!-- Card 1 -->
-          <div class="product-card">
-            <div class="card-image">
-              <img src="https://images.unsplash.com/photo-1506306460321-df07137fa74e?q=80&w=600&auto=format&fit=crop" alt="Kapı Modelleri">
-            </div>
-            <div class="card-content">
-              <h3>Kapı Modelleri</h3>
-              <p>Mekanlarınıza şıklık katan modern iç oda kapıları.</p>
-              <a href="#" class="link-arrow">Detayları Gör →</a>
-            </div>
-          </div>
-          <!-- Card 2 -->
-          <div class="product-card">
-            <div class="card-image">
-              <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=600&auto=format&fit=crop" alt="Dolap Kapakları">
-            </div>
-            <div class="card-content">
-              <h3>Dolap Kapakları</h3>
-              <p>Mutfak ve banyo dolapları için özel tasarım kapaklar.</p>
-              <a href="#" class="link-arrow">Detayları Gör →</a>
-            </div>
-          </div>
-          <!-- Card 3 -->
-          <div class="product-card">
-            <div class="card-image">
-              <img src="https://images.unsplash.com/photo-1620626011761-996317b8d101?q=80&w=600&auto=format&fit=crop" alt="Duvar Panelleri">
-            </div>
-            <div class="card-content">
-              <h3>Duvar Panelleri</h3>
-              <p>Dekoratif ahşap ve akustik duvar panelleri.</p>
-              <a href="#" class="link-arrow">Detayları Gör →</a>
-            </div>
-          </div>
-          <!-- Card 4 -->
-          <div class="product-card">
-            <div class="card-image">
-              <img src="https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=600&auto=format&fit=crop" alt="Aksesuarlar">
-            </div>
-            <div class="card-content">
-              <h3>Aksesuarlar</h3>
-              <p>Mobilya ve kapılarınız için şık tamamlayıcılar.</p>
-              <a href="#" class="link-arrow">Detayları Gör →</a>
-            </div>
-          </div>
-        </div>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="container">
+      <a href="#" class="logo">
+        İZCAN
+        <span>ORMAN ÜRÜNLERİ</span>
+      </a>
+      <nav class="nav-menu" id="nav-menu">
+        <a href="#home" class="nav-link active">Ana Sayfa</a>
+        <a href="#products" class="nav-link">Ürünler</a>
+        <a href="#catalog" class="nav-link">Katalog</a>
+        <a href="#about" class="nav-link">Hakkımızda</a>
+        <a href="#gallery" class="nav-link">Galeri</a>
+        <a href="#contact" class="nav-link">İletişim</a>
+        <button class="btn btn-primary hidden-desktop">Teklif Al</button>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-primary show-desktop">Teklif Al</button>
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">☰</button>
       </div>
-    </section>
+    </div>
+  </header>
 
-    <!-- About Section -->
-    <section id="about" class="section about-section">
-      <div class="container about-grid">
-        <div class="about-text">
-          <span class="eyebrow">Hakkımızda</span>
-          <h2>Tecrübe ve <span class="text-gold">Kalitenin Adresi</span></h2>
-          <p>İzcan Orman Ürünleri olarak, yılların verdiği tecrübe ile sektörde öncü bir rol üstleniyoruz. Modern üretim tesislerimizde, en kaliteli ham maddeleri ustalıkla işleyerek yaşam alanlarınıza değer katıyoruz.</p>
-          <ul class="features-list">
-            <li>✔ Yüksek Üretim Kapasitesi</li>
-            <li>✔ Modern ve Özgün Tasarımlar</li>
-            <li>✔ Zamanında Teslimat Garantisi</li>
-          </ul>
-          <a href="#contact" class="btn btn-outline">Daha Fazla Bilgi</a>
-        </div>
-        <div class="about-image">
-          <img src="https://images.unsplash.com/photo-1623945417032-680c10e47854?q=80&w=800&auto=format&fit=crop" alt="İzcan Fabrika">
-          <div class="experience-badge">
-            <span class="year">20+</span>
-            <span class="text">Yıllık Tecrübe</span>
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="slider-container">
+      <!-- Slide 1 -->
+      <div class="slide active"
+        style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?q=80&w=1920&auto=format&fit=crop');">
+        <div class="container slide-content">
+          <h1 id="hero-title">Kapı ve Mobilya Çözümlerinde <span class="text-gold">Güvenilir Üretici</span></h1>
+          <p id="hero-subtitle">Modern tasarım, yüksek kalite ve güçlü üretim altyapısı ile mekanlarınıza değer
+            katıyoruz.</p>
+          <div class="hero-btns">
+            <a href="#catalog" class="btn btn-primary">Kataloğu İncele</a>
+            <a href="#contact" class="btn btn-outline">İletişime Geç</a>
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Gallery Preview -->
-    <section id="gallery" class="section">
-      <div class="container">
-        <h2 class="section-title text-center">Uygulama Galerisi</h2>
-        <div class="gallery-grid">
-           <!-- Images will be populated via CSS or JS mainly, just layout here -->
-           <div class="gallery-item item-1"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=600&auto=format&fit=crop" alt="Gallery 1"></div>
-           <div class="gallery-item item-2"><img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?q=80&w=600&auto=format&fit=crop" alt="Gallery 2"></div>
-           <div class="gallery-item item-3"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=600&auto=format&fit=crop" alt="Gallery 3"></div>
-           <div class="gallery-item item-4"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop" alt="Gallery 4"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="section bg-darker">
-      <div class="container contact-grid">
-        <div class="contact-info">
-          <h2>İletişime Geçin</h2>
-          <p>Projeleriniz için teklif almak veya ürünlerimiz hakkında detaylı bilgi edinmek için bize ulaşın.</p>
-          
-          <div class="contact-item">
-            <h3>Adres</h3>
-            <p>Organize Sanayi Bölgesi, 3. Cadde No:12<br>Bursa, Türkiye</p>
-          </div>
-          <div class="contact-item">
-            <h3>Telefon</h3>
-            <p>+90 555 123 45 67</p>
-          </div>
-          <div class="contact-item">
-            <h3>E-posta</h3>
-            <p>info@izcanormanurunleri.com</p>
-          </div>
-        </div>
-        <div class="contact-form-wrapper">
-          <form class="contact-form">
-            <div class="form-group">
-              <input type="text" placeholder="Adınız Soyadınız" required>
+      <!-- ... code skip ... -->
+      <!-- About Section -->
+      <section id="about" class="section about-section">
+        <div class="container about-grid">
+          <div class="about-text">
+            <span class="eyebrow">Hakkımızda</span>
+            <h2 id="about-title">Tecrübe ve <span class="text-gold">Kalitenin Adresi</span></h2>
+            <p id="about-text">İzcan Orman Ürünleri olarak, yılların verdiği tecrübe ile sektörde öncü bir rol
+              üstleniyoruz. Modern üretim tesislerimizde, en kaliteli ham maddeleri ustalıkla işleyerek yaşam
+              alanlarınıza değer katıyoruz.</p>
+            <!-- ... code skip ... -->
+            <div class="contact-item">
+              <h3>Adres</h3>
+              <p id="contact-address">Organize Sanayi Bölgesi, 3. Cadde No:12<br>Bursa, Türkiye</p>
             </div>
-            <div class="form-group">
-              <input type="email" placeholder="E-posta Adresiniz" required>
+            <div class="contact-item">
+              <h3>Telefon</h3>
+              <p id="contact-phone">+90 555 123 45 67</p>
             </div>
-            <div class="form-group">
-              <input type="tel" placeholder="Telefon Numaranız">
+            <div class="contact-item">
+              <h3>E-posta</h3>
+              <p id="contact-email">info@izcanormanurunleri.com</p>
             </div>
-            <div class="form-group">
-              <textarea placeholder="Mesajınız" rows="5"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary full-width">Gönder</button>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="container footer-grid">
-        <div class="footer-col">
-          <a href="#" class="logo">İZCAN<span>ORMAN ÜRÜNLERİ</span></a>
-          <p class="mt-2">Kapı, dolap kapakları ve mobilya aksesuarlarında öncü üretim.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Hızlı Menü</h4>
-          <ul>
-            <li><a href="#home">Ana Sayfa</a></li>
-            <li><a href="#products">Ürünler</a></li>
-            <li><a href="#about">Hakkımızda</a></li>
-            <li><a href="#contact">İletişim</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Ürünler</h4>
-          <ul>
-            <li><a href="#">Kapı Modelleri</a></li>
-            <li><a href="#">Dolap Kapakları</a></li>
-            <li><a href="#">Duvar Panelleri</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Sosyal Medya</h4>
-          <div class="social-icons">
-             <a href="#">IG</a>
-             <a href="#">FB</a>
-             <a href="#">LN</a>
+          </div>
+          <div class="contact-form-wrapper">
+            <form class="contact-form">
+              <div class="form-group">
+                <input type="text" placeholder="Adınız Soyadınız" required>
+              </div>
+              <div class="form-group">
+                <input type="email" placeholder="E-posta Adresiniz" required>
+              </div>
+              <div class="form-group">
+                <input type="tel" placeholder="Telefon Numaranız">
+              </div>
+              <div class="form-group">
+                <textarea placeholder="Mesajınız" rows="5"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary full-width">Gönder</button>
+            </form>
           </div>
         </div>
-      </div>
-      <div class="footer-bottom text-center">
-        <p>&copy; 2024 İzcan Orman Ürünleri Ltd. Şti. Tüm hakları saklıdır.</p>
-      </div>
-    </footer>
+      </section>
 
-    <script type="module" src="/main.js"></script>
-  </body>
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="container footer-grid">
+          <div class="footer-col">
+            <a href="#" class="logo">İZCAN<span>ORMAN ÜRÜNLERİ</span></a>
+            <p class="mt-2">Kapı, dolap kapakları ve mobilya aksesuarlarında öncü üretim.</p>
+          </div>
+          <div class="footer-col">
+            <h4>Hızlı Menü</h4>
+            <ul>
+              <li><a href="#home">Ana Sayfa</a></li>
+              <li><a href="#products">Ürünler</a></li>
+              <li><a href="#about">Hakkımızda</a></li>
+              <li><a href="#contact">İletişim</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Ürünler</h4>
+            <ul>
+              <li><a href="#">Kapı Modelleri</a></li>
+              <li><a href="#">Dolap Kapakları</a></li>
+              <li><a href="#">Duvar Panelleri</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Sosyal Medya</h4>
+            <div class="social-icons">
+              <a href="#">IG</a>
+              <a href="#">FB</a>
+              <a href="#">LN</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom text-center">
+          <p>&copy; 2024 İzcan Orman Ürünleri Ltd. Şti. Tüm hakları saklıdır.</p>
+        </div>
+      </footer>
+
+      <script type="module" src="/main.js"></script>
+</body>
+
 </html>

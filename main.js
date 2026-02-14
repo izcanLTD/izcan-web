@@ -16,27 +16,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadContent() {
     const { data, error } = await supabase.from('site_content').select('*');
     if (!error && data) {
-        data.forEach(item => {
-            // Find elements with matching ID or specific logic
-            // e.g. hero_title_1 -> element with id="hero_title_1"
-            // Note: The HTML needs to start having IDs matching these keys for auto-population
-            // OR we manually map them here for safety
+        // Map database keys to HTML IDs
+        const keyMap = {
+            'hero_title_1': 'hero-title',
+            'hero_subtitle_1': 'hero-subtitle',
+            'about_title': 'about-title',
+            'about_text': 'about-text',
+            'contact_address': 'contact-address',
+            'contact_phone': 'contact-phone',
+            'contact_email': 'contact-email'
+        };
 
-            if (item.key === 'hero_title_1') {
-                const el = document.querySelector('.slide.active h1');
-                if (el) el.innerHTML = item.value; // Use innerHTML to allow spans like <span class="text-gold">
-            }
-            if (item.key === 'hero_subtitle_1') {
-                const el = document.querySelector('.slide.active p');
-                if (el) el.textContent = item.value;
-            }
-            if (item.key === 'about_title') {
-                const el = document.querySelector('#about h2');
+        data.forEach(item => {
+            const elementId = keyMap[item.key];
+            if (elementId) {
+                const el = document.getElementById(elementId);
                 if (el) el.innerHTML = item.value;
-            }
-            if (item.key === 'about_text') {
-                const el = document.querySelector('#about p');
-                if (el) el.textContent = item.value;
             }
         });
     }

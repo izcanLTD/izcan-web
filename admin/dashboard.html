@@ -4,91 +4,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İzcan Admin - Dashboard</title>
-    <link rel="stylesheet" href="../style.css">
+    <title>İzcan Yönetim Paneli</title>
+    <!-- Use Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./admin.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-dark">
-    <nav class="admin-nav">
-        <div class="container flex-between">
-            <span class="text-gold font-bold">İzcan Admin</span>
-            <button id="logout-btn" class="btn btn-outline btn-sm">Çıkış</button>
-        </div>
-    </nav>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>İZCAN</h2>
+                <span>Yönetim Paneli</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="products">
+                    <i class="fa-solid fa-box-open"></i> Ürünler
+                </button>
+                <button class="nav-item" data-tab="content">
+                    <i class="fa-solid fa-pen-to-square"></i> İçerik Yönetimi
+                </button>
+                <a href="/" target="_blank" class="nav-item preview-link">
+                    <i class="fa-solid fa-eye"></i> Siteyi Görüntüle
+                </a>
+                <button id="logout-btn" class="nav-item logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Çıkış
+                </button>
+            </nav>
+        </aside>
 
-    <div class="container section">
-        <div class="admin-tabs">
-            <button class="tab-btn active" data-tab="products">Ürün Yönetimi</button>
-            <button class="tab-btn" data-tab="content">Site İçerikleri</button>
-        </div>
+        <main class="main-content">
+            <!-- Products Section -->
+            <section id="products" class="content-section active">
+                <div class="section-header">
+                    <h1>Ürün Yönetimi</h1>
+                    <button id="open-add-modal" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Yeni Ürün Ekle
+                    </button>
+                </div>
 
-        <!-- Products Tab -->
-        <div id="products" class="tab-content active">
-            <div class="card p-4 mb-4">
-                <h3>Yeni Ürün Ekle</h3>
-                <form id="add-product-form" class="mt-3">
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label>Ürün Adı</label>
-                            <input type="text" id="prod-title" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Kategori</label>
-                            <select id="prod-category" required>
-                                <option value="kapi">Kapı Modelleri</option>
-                                <option value="dolap">Dolap Kapakları</option>
-                                <option value="panel">Duvar Panelleri</option>
-                                <option value="aksesuar">Aksesuarlar</option>
-                            </select>
-                        </div>
+                <div class="products-grid" id="product-list-admin">
+                    <!-- Dynamic Product Cards -->
+                    <div class="loading-spinner"></div>
+                </div>
+            </section>
+
+            <!-- Content Section -->
+            <section id="content" class="content-section">
+                <div class="section-header">
+                    <h1>Site İçerikleri</h1>
+                    <button id="save-content-btn" class="btn-primary">
+                        <i class="fa-solid fa-save"></i> Değişiklikleri Kaydet
+                    </button>
+                </div>
+
+                <form id="content-form" class="content-form-grid">
+                    <div class="form-group full-width">
+                        <h3><i class="fa-solid fa-house"></i> Hero (Ana Slider)</h3>
                     </div>
-                    <div class="form-group">
-                        <label>Görsel Yükle</label>
-                        <input type="file" id="prod-image" accept="image/*" required>
+                    <div class="form-card">
+                        <label>Başlık</label>
+                        <input type="text" name="hero_title_1" placeholder="Ana Başlık">
                     </div>
-                    <div class="form-group">
-                        <label>Açıklama</label>
-                        <textarea id="prod-desc" rows="3"></textarea>
+                    <div class="form-card">
+                        <label>Alt Metin</label>
+                        <textarea name="hero_subtitle_1" rows="3" placeholder="Alt açıklama..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Ürünü Ekle</button>
+
+                    <div class="form-group full-width mt-4">
+                        <h3><i class="fa-solid fa-circle-info"></i> Hakkımızda</h3>
+                    </div>
+                    <div class="form-card">
+                        <label>Başlık</label>
+                        <input type="text" name="about_title">
+                    </div>
+                    <div class="form-card full-width">
+                        <label>Metin</label>
+                        <textarea name="about_text" rows="5"></textarea>
+                    </div>
+
+                    <div class="form-group full-width mt-4">
+                        <h3><i class="fa-solid fa-address-book"></i> İletişim</h3>
+                    </div>
+                    <div class="form-card">
+                        <label>Adres</label>
+                        <input type="text" name="contact_address">
+                    </div>
+                    <div class="form-card">
+                        <label>Telefon</label>
+                        <input type="text" name="contact_phone">
+                    </div>
+                    <div class="form-card">
+                        <label>E-posta</label>
+                        <input type="text" name="contact_email">
+                    </div>
                 </form>
-            </div>
+            </section>
+        </main>
+    </div>
 
-            <div class="product-list-admin" id="product-list-admin">
-                <!-- Products will be loaded here -->
-                <p class="text-center text-muted">Yükleniyor...</p>
-            </div>
-        </div>
-
-        <!-- Content Tab -->
-        <div id="content" class="tab-content">
-            <div class="card p-4">
-                <h3>Site Metinleri</h3>
-                <form id="content-form">
-                    <div class="form-group">
-                        <label>Hero Başlık</label>
-                        <input type="text" name="hero_title_1" id="hero_title_1">
-                    </div>
-                    <div class="form-group">
-                        <label>Hero Alt Metin</label>
-                        <textarea name="hero_subtitle_1" id="hero_subtitle_1" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Hakkımızda Başlık</label>
-                        <input type="text" name="about_title" id="about_title">
-                    </div>
-                    <div class="form-group">
-                        <label>Hakkımızda Metni</label>
-                        <textarea name="about_text" id="about_text" rows="5"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>İletişim Adres</label>
-                        <input type="text" name="contact_address" id="contact_address">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Kaydet</button>
-                </form>
-            </div>
+    <!-- Add Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Yeni Ürün Ekle</h2>
+            <form id="add-product-form">
+                <div class="form-group">
+                    <label>Ürün Başlığı</label>
+                    <input type="text" id="prod-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select id="prod-category" required>
+                        <option value="kapi">Kapı Modelleri</option>
+                        <option value="dolap">Dolap Kapakları</option>
+                        <option value="panel">Duvar Panelleri</option>
+                        <option value="aksesuar">Aksesuarlar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Görsel Seç</label>
+                    <input type="file" id="prod-image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>Kısa Açıklama</label>
+                    <textarea id="prod-desc" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-primary full-width">Kaydet</button>
+            </form>
         </div>
     </div>
 

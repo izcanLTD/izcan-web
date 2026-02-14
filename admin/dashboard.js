@@ -11,17 +11,29 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
     window.location.href = './index.html';
 });
 
-// Tabs
-const tabs = document.querySelectorAll('.tab-btn');
-const contents = document.querySelectorAll('.tab-content');
+/* --- Navigation --- */
+const navItems = document.querySelectorAll('.nav-item[data-tab]');
+const sections = document.querySelectorAll('.content-section');
 
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        contents.forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.tab).classList.add('active');
+navItems.forEach(item => {
+    item.addEventListener('click', () => {
+        navItems.forEach(n => n.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+
+        item.classList.add('active');
+        document.getElementById(item.dataset.tab).classList.add('active');
     });
+});
+
+/* --- Modal Logic --- */
+const modal = document.getElementById('product-modal');
+const openModalBtn = document.getElementById('open-add-modal');
+const closeModalBtn = document.querySelector('.close-modal');
+
+if (openModalBtn) openModalBtn.addEventListener('click', () => modal.classList.add('show'));
+if (closeModalBtn) closeModalBtn.addEventListener('click', () => modal.classList.remove('show'));
+window.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('show');
 });
 
 /* --- Products Logic --- */
@@ -29,7 +41,9 @@ const productList = document.getElementById('product-list-admin');
 const addProductForm = document.getElementById('add-product-form');
 
 async function loadProducts() {
-    productList.innerHTML = '<p class="text-center">Yükleniyor...</p>';
+    if (!productList) return;
+    productList.innerHTML = '<div class="loading-spinner"></div>';
+
     const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -43,21 +57,24 @@ async function loadProducts() {
     productList.innerHTML = '';
     data.forEach(prod => {
         const div = document.createElement('div');
-        div.className = 'admin-prod-card';
+        div.className = 'product-card';
         div.innerHTML = `
+            <button class="delete-btn" data-id="${prod.id}"><i class="fa-solid fa-trash"></i></button>
             <img src="${prod.image_url}" alt="${prod.title}">
-            <h4>${prod.title}</h4>
-            <p class="text-muted text-sm">${prod.category}</p>
-            <button class="admin-prod-delete" data-id="${prod.id}">X</button>
+            <div class="card-details">
+                <h3>${prod.title}</h3>
+                <p>${prod.category}</p>
+            </div>
         `;
         productList.appendChild(div);
     });
 
     // Delete Event Listeners
-    document.querySelectorAll('.admin-prod-delete').forEach(btn => {
+    document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
+            e.stopPropagation(); // Prevent card click
             if (confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
-                const id = e.target.dataset.id;
+                const id = e.target.closest('.delete-btn').dataset.id;
                 await deleteProduct(id);
             }
         });
@@ -70,65 +87,56 @@ async function deleteProduct(id) {
     else alert('Silme başarısız: ' + error.message);
 }
 
-addProductForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const title = document.getElementById('prod-title').value;
-    const category = document.getElementById('prod-category').value;
-    const desc = document.getElementById('prod-desc').value;
-    const file = document.getElementById('prod-image').files[0];
-    const submitBtn = addProductForm.querySelector('button');
+if (addProductForm) {
+    addProductForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('prod-title').value;
+        const category = document.getElementById('prod-category').value;
+        const desc = document.getElementById('prod-desc').value;
+        const file = document.getElementById('prod-image').files[0];
+        const submitBtn = addProductForm.querySelector('button');
 
-    if (!file) {
-        alert('Lütfen bir görsel seçin.');
-        return;
-    }
+        if (!file) {
+            alert('Lütfen bir görsel seçin.');
+            return;
+        }
 
-    submitBtn.textContent = 'Yükleniyor...';
-    submitBtn.disabled = true;
+        submitBtn.textContent = 'Yükleniyor...';
+        submitBtn.disabled = true;
 
-    try {
-        // 1. Upload Image
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        const filePath = `${fileName}`;
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-            .from('images')
-            .upload(filePath, file);
+            const { error: uploadError } = await supabase.storage.from('images').upload(filePath, file);
+            if (uploadError) throw uploadError;
 
-        if (uploadError) throw uploadError;
+            const { data: { publicUrl } } = supabase.storage.from('images').getPublicUrl(filePath);
 
-        // 2. Get Public URL
-        const { data: { publicUrl } } = supabase.storage
-            .from('images')
-            .getPublicUrl(filePath);
-
-        // 3. Insert into DB
-        const { error: insertError } = await supabase
-            .from('products')
-            .insert([{
-                title,
-                category,
-                description: desc,
-                image_url: publicUrl
+            const { error: insertError } = await supabase.from('products').insert([{
+                title, category, description: desc, image_url: publicUrl
             }]);
 
-        if (insertError) throw insertError;
+            if (insertError) throw insertError;
 
-        alert('Ürün başarıyla eklendi!');
-        addProductForm.reset();
-        loadProducts();
+            alert('Ürün eklendi!');
+            addProductForm.reset();
+            modal.classList.remove('show');
+            loadProducts();
 
-    } catch (err) {
-        alert('Hata: ' + err.message);
-    } finally {
-        submitBtn.textContent = 'Ürünü Ekle';
-        submitBtn.disabled = false;
-    }
-});
+        } catch (err) {
+            alert('Hata: ' + err.message);
+        } finally {
+            submitBtn.textContent = 'Kaydet';
+            submitBtn.disabled = false;
+        }
+    });
+}
 
 /* --- Content Logic --- */
 const contentForm = document.getElementById('content-form');
+const saveContentBtn = document.getElementById('save-content-btn');
 
 async function loadContent() {
     const { data, error } = await supabase.from('site_content').select('*');
@@ -140,24 +148,35 @@ async function loadContent() {
     }
 }
 
-contentForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(contentForm);
-    const updates = [];
+if (saveContentBtn && contentForm) {
+    saveContentBtn.addEventListener('click', async () => {
+        saveContentBtn.disabled = true;
+        saveContentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
 
-    for (let [key, value] of formData.entries()) {
-        updates.push({
-            key: key,
-            value: value,
-            section: key.split('_')[0] // 'hero', 'about' etc
-        });
-    }
+        const formData = new FormData(contentForm);
+        const updates = [];
 
-    const { error } = await supabase.from('site_content').upsert(updates);
+        for (let [key, value] of formData.entries()) {
+            updates.push({
+                key: key,
+                value: value,
+                section: key.split('_')[0]
+            });
+        }
 
-    if (error) alert('Hata: ' + error.message);
-    else alert('Değişiklikler kaydedildi!');
-});
+        const { error } = await supabase.from('site_content').upsert(updates);
+
+        if (error) {
+            alert('Hata: ' + error.message);
+        } else {
+            // Optional: Success notification
+            setTimeout(() => alert('Değişiklikler başarıyla kaydedildi!'), 100);
+        }
+
+        saveContentBtn.disabled = false;
+        saveContentBtn.innerHTML = '<i class="fa-solid fa-save"></i> Değişiklikleri Kaydet';
+    });
+}
 
 // Init
 loadProducts();
