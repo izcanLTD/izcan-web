@@ -44,6 +44,7 @@ function setupModal(modalId, openBtnId) {
 const prodModal = setupModal('product-modal', 'open-add-modal');
 const sliderModal = setupModal('slider-modal', 'open-slider-modal');
 const galleryModal = setupModal('gallery-modal', 'open-gallery-modal');
+const catalogModal = setupModal('catalog-modal', 'open-catalog-modal');
 
 /* ---------------- SLIDER LOGIC ---------------- */
 const sliderList = document.getElementById('slider-list-admin');
@@ -330,10 +331,63 @@ document.addEventListener('click', async (e) => {
                 if (type === 'products') loadProducts();
                 if (type === 'slides') loadSlider();
                 if (type === 'gallery') loadGallery();
+                if (type === 'catalog_pages') loadCatalog();
             } else { alert('Hata: ' + error.message); }
         }
     }
 });
+
+/* --- PRODUCT LOGIC --- */
+const addProductForm = document.getElementById('add-product-form');
+if (addProductForm) {
+    addProductForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = addProductForm.querySelector('button');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Kaydediliyor...';
+
+        try {
+            const title = document.getElementById('prod-title').value;
+            const category = document.getElementById('prod-category').value;
+            const description = document.getElementById('prod-desc').value;
+            const imageFile = document.getElementById('prod-image').files[0];
+
+            if (!imageFile) {
+                alert('Lütfen bir görsel seçin!');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kaydet';
+                return;
+            }
+
+            // Upload image to Supabase Storage
+            const path = `products/${Date.now()}_${imageFile.name}`;
+            const { error: uploadError } = await supabase.storage.from('images').upload(path, imageFile);
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabase.storage.from('images').getPublicUrl(path);
+
+            // Insert product to database
+            const { error: insertError } = await supabase.from('products').insert({
+                title,
+                category,
+                description,
+                image_url: urlData.publicUrl
+            });
+
+            if (insertError) throw insertError;
+
+            alert('Ürün başarıyla eklendi!');
+            prodModal.classList.remove('show');
+            addProductForm.reset();
+            loadProducts();
+        } catch (error) {
+            alert('Hata: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Kaydet';
+        }
+    });
+}
 
 /* --- Initialize Other Sections --- */
 async function loadProducts() {
@@ -348,6 +402,72 @@ async function loadProducts() {
                  <img src="${prod.image_url}" alt="${prod.title}">
                  <div class="card-details"><h3>${prod.title}</h3></div>
             </div>`;
+    });
+}
+
+/* --- CATALOG LOGIC --- */
+const catalogList = document.getElementById('catalog-list-admin');
+const addCatalogForm = document.getElementById('add-catalog-form');
+
+async function loadCatalog() {
+    if (!catalogList) return;
+    const { data } = await supabase.from('catalog_pages').select('*').order('page_number', { ascending: true });
+    catalogList.innerHTML = '';
+    data?.forEach(page => {
+        const div = document.createElement('div');
+        div.className = 'product-card';
+        div.innerHTML = `
+            <button class="delete-btn" data-id="${page.id}" data-type="catalog_pages"><i class="fa-solid fa-trash"></i></button>
+            <img src="${page.image_url}" alt="Sayfa ${page.page_number}">
+            <div class="card-details"><h3>Sayfa ${page.page_number}</h3></div>
+        `;
+        catalogList.appendChild(div);
+    });
+}
+
+if (addCatalogForm) {
+    addCatalogForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = addCatalogForm.querySelector('button');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Kaydediliyor...';
+
+        try {
+            const pageNumber = document.getElementById('catalog-page-number').value;
+            const imageFile = document.getElementById('catalog-image').files[0];
+
+            if (!imageFile) {
+                alert('Lütfen bir görsel seçin!');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kaydet';
+                return;
+            }
+
+            // Upload image
+            const path = `catalog/${Date.now()}_${imageFile.name}`;
+            const { error: uploadError } = await supabase.storage.from('images').upload(path, imageFile);
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabase.storage.from('images').getPublicUrl(path);
+
+            // Insert catalog page
+            const { error: insertError } = await supabase.from('catalog_pages').insert({
+                page_number: parseInt(pageNumber),
+                image_url: urlData.publicUrl
+            });
+
+            if (insertError) throw insertError;
+
+            alert('Katalog sayfası eklendi!');
+            catalogModal.classList.remove('show');
+            addCatalogForm.reset();
+            loadCatalog();
+        } catch (error) {
+            alert('Hata: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Kaydet';
+        }
     });
 }
 
@@ -374,3 +494,4 @@ if (contentForm) {
 loadProducts();
 loadSlider();
 loadGallery();
+loadCatalog();

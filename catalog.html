@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog - İzcan Orman Ürünleri</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    <style>
+        .catalog-container {
+            min-height: 100vh;
+            background-color: var(--color-primary);
+            padding: 100px 20px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .catalog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .catalog-header h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--color-gold);
+            margin-bottom: 1rem;
+        }
+
+        .catalog-header p {
+            color: var(--color-text-muted);
+            font-size: 1.1rem;
+        }
+
+        #flipbook {
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+        }
+
+        #flipbook .page {
+            width: 400px;
+            height: 600px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #flipbook .page img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .catalog-controls {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .catalog-controls button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--color-gold);
+            color: var(--color-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .catalog-controls button:hover {
+            background-color: var(--color-gold-hover);
+            transform: translateY(-2px);
+        }
+
+        .catalog-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-number {
+            color: var(--color-text-main);
+            font-size: 1.1rem;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: var(--color-gold);
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .back-link:hover {
+            color: var(--color-gold-hover);
+        }
+
+        @media (max-width: 900px) {
+            #flipbook {
+                width: 600px;
+                height: 450px;
+            }
+
+            #flipbook .page {
+                width: 300px;
+                height: 450px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            #flipbook {
+                width: 400px;
+                height: 300px;
+            }
+
+            #flipbook .page {
+                width: 200px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/" class="back-link">← Ana Sayfaya Dön</a>
+
+    <div class="catalog-container">
+        <div class="catalog-header">
+            <h1>Ürün Kataloğumuz</h1>
+            <p>Sayfaları çevirmek için tıklayın veya sürükleyin</p>
+        </div>
+
+        <div id="flipbook">
+            <!-- Pages will be loaded dynamically -->
+        </div>
+
+        <div class="catalog-controls">
+            <button id="prev-btn">← Önceki</button>
+            <span class="page-number">Sayfa <span id="current-page">1</span> / <span id="total-pages">1</span></span>
+            <button id="next-btn">Sonraki →</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './src/supabase.js';
+
+        async function loadCatalog() {
+            const { data, error } = await supabase
+                .from('catalog_pages')
+                .select('*')
+                .order('page_number', { ascending: true });
+
+            if (error || !data || data.length === 0) {
+                document.getElementById('flipbook').innerHTML = '<div class="page"><p style="color: #666;">Katalog henüz yüklenmedi.</p></div>';
+                return;
+            }
+
+            const flipbook = document.getElementById('flipbook');
+            flipbook.innerHTML = '';
+
+            data.forEach((page, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page';
+                pageDiv.innerHTML = `<img src="${page.image_url}" alt="Sayfa ${page.page_number}">`;
+                flipbook.appendChild(pageDiv);
+            });
+
+            // Initialize Turn.js
+            $('#flipbook').turn({
+                width: 800,
+                height: 600,
+                autoCenter: true,
+                elevation: 50,
+                gradients: true,
+                duration: 1000
+            });
+
+            // Update page counter
+            const totalPages = data.length;
+            document.getElementById('total-pages').textContent = totalPages;
+
+            $('#flipbook').bind('turned', function (event, page) {
+                document.getElementById('current-page').textContent = page;
+            });
+
+            // Control buttons
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                $('#flipbook').turn('previous');
+            });
+
+            document.getElementById('next-btn').addEventListener('click', () => {
+                $('#flipbook').turn('next');
+            });
+        }
+
+        loadCatalog();
+    </script>
+</body>
+
+</html>

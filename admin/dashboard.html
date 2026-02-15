@@ -29,6 +29,9 @@
                 <button class="nav-item" data-tab="gallery">
                     <i class="fa-solid fa-camera"></i> Galeri
                 </button>
+                <button class="nav-item" data-tab="catalog">
+                    <i class="fa-solid fa-book"></i> Katalog
+                </button>
                 <button class="nav-item" data-tab="content">
                     <i class="fa-solid fa-pen-to-square"></i> Site Metinleri
                 </button>
@@ -80,6 +83,19 @@
                 </div>
                 <div class="products-grid" id="gallery-list-admin">
                     <!-- Dynamic Gallery Cards -->
+                </div>
+            </section>
+
+            <!-- Catalog Section -->
+            <section id="catalog" class="content-section">
+                <div class="section-header">
+                    <h1>Katalog Yönetimi</h1>
+                    <button id="open-catalog-modal" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Yeni Sayfa Ekle
+                    </button>
+                </div>
+                <div class="products-grid" id="catalog-list-admin">
+                    <!-- Dynamic Catalog Pages -->
                 </div>
             </section>
 
@@ -275,6 +291,25 @@
                 <div class="form-group">
                     <label>Açıklama (Opsiyonel)</label>
                     <input type="text" id="gallery-caption">
+                </div>
+                <button type="submit" class="btn-primary full-width">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Catalog Page Modal -->
+    <div id="catalog-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Katalog Sayfası Ekle</h2>
+            <form id="add-catalog-form">
+                <div class="form-group">
+                    <label>Sayfa Numarası</label>
+                    <input type="number" id="catalog-page-number" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Sayfa Görseli</label>
+                    <input type="file" id="catalog-image" accept="image/*" required>
                 </div>
                 <button type="submit" class="btn-primary full-width">Kaydet</button>
             </form>
