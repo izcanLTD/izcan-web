@@ -424,8 +424,8 @@ async function loadCatalog() {
             <button class="delete-btn" data-id="${page.id}" data-type="catalog_pages"><i class="fa-solid fa-trash"></i></button>
             <img src="${thumbnail}" alt="Sayfa ${page.page_number}">
             <div class="card-details">
-                <h3>Sayfa ${page.page_number}</h3>
-                <p>${fileType === 'pdf' ? 'PDF Dosyası' : 'Görsel'}</p>
+                <h3>${page.catalog_name || 'Katalog ' + page.page_number}</h3>
+                <p>Sayfa ${page.page_number} • ${fileType === 'pdf' ? 'PDF' : 'Görsel'}</p>
             </div>
         `;
         catalogList.appendChild(div);
