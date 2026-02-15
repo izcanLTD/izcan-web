@@ -1,4 +1,3 @@
-import './style.css'
 import { supabase } from './src/supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {

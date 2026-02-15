@@ -1,8 +1,1 @@
-/* Cleared default Vite styles to prevent layout issues */
-.hidden-desktop {
-    display: none;
-}
-
-.hidden {
-    display: none !important;
-}
+/* File cleared to avoid conflicts */
