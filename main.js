@@ -171,12 +171,18 @@ async function loadGallery() {
 }
 
 /* --- UTILS --- */
-function setupMobileMenu() { /* Same */
+function setupMobileMenu() {
     const toggle = document.getElementById('mobile-toggle');
     const menu = document.getElementById('nav-menu');
     if (toggle && menu) {
-        toggle.addEventListener('click', () => { menu.classList.toggle('open'); });
-        menu.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => menu.classList.remove('open')));
+        toggle.addEventListener('click', () => {
+            menu.classList.toggle('open');
+            document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+        });
+        menu.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => {
+            menu.classList.remove('open');
+            document.body.style.overflow = '';
+        }));
     }
 }
 

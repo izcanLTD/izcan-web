@@ -40,6 +40,9 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-y: scroll !important;
+    /* Force scrollbar */
+    height: 100% !important;
 }
 
 body {
@@ -47,8 +50,22 @@ body {
     background-color: var(--color-primary);
     color: var(--color-text-main);
     line-height: 1.6;
-    overflow-x: hidden;
+    /* overflow-x: hidden; REMOVED */
+    overflow-y: visible !important;
+    /* Allow content to flow */
+    position: static !important;
+    /* Prevent fixed locking */
+    width: 100%;
+    height: auto !important;
     display: block;
+}
+
+/* Ensure no wrapper locks scroll */
+#app,
+.wrapper,
+.main {
+    overflow: visible !important;
+    height: auto !important;
 }
 
 a {
