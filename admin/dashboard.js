@@ -416,10 +416,17 @@ async function loadCatalog() {
     data?.forEach(page => {
         const div = document.createElement('div');
         div.className = 'product-card';
+        const fileType = page.file_type || 'image';
+        const displayUrl = page.file_url || page.image_url;
+        const thumbnail = fileType === 'pdf' ? 'https://via.placeholder.com/200x300/1a1a1a/c9a961?text=PDF' : displayUrl;
+
         div.innerHTML = `
             <button class="delete-btn" data-id="${page.id}" data-type="catalog_pages"><i class="fa-solid fa-trash"></i></button>
-            <img src="${page.image_url}" alt="Sayfa ${page.page_number}">
-            <div class="card-details"><h3>Sayfa ${page.page_number}</h3></div>
+            <img src="${thumbnail}" alt="Sayfa ${page.page_number}">
+            <div class="card-details">
+                <h3>Sayfa ${page.page_number}</h3>
+                <p>${fileType === 'pdf' ? 'PDF Dosyası' : 'Görsel'}</p>
+            </div>
         `;
         catalogList.appendChild(div);
     });
@@ -434,31 +441,55 @@ if (addCatalogForm) {
 
         try {
             const pageNumber = document.getElementById('catalog-page-number').value;
-            const imageFile = document.getElementById('catalog-image').files[0];
+            const file = document.getElementById('catalog-file').files[0];
 
-            if (!imageFile) {
-                alert('Lütfen bir görsel seçin!');
+            if (!file) {
+                alert('Lütfen bir dosya seçin!');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Kaydet';
                 return;
             }
 
-            // Upload image
-            const path = `catalog/${Date.now()}_${imageFile.name}`;
-            const { error: uploadError } = await supabase.storage.from('images').upload(path, imageFile);
+            // Sanitize filename - remove spaces, Turkish chars, special chars
+            const sanitizeFilename = (filename) => {
+                const ext = filename.substring(filename.lastIndexOf('.'));
+                const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.'));
+
+                const sanitized = nameWithoutExt
+                    .toLowerCase()
+                    .replace(/ğ/g, 'g')
+                    .replace(/ü/g, 'u')
+                    .replace(/ş/g, 's')
+                    .replace(/ı/g, 'i')
+                    .replace(/ö/g, 'o')
+                    .replace(/ç/g, 'c')
+                    .replace(/[^a-z0-9]/g, '_')
+                    .replace(/_+/g, '_')
+                    .replace(/^_|_$/g, '');
+
+                return sanitized + ext.toLowerCase();
+            };
+
+            const cleanFilename = sanitizeFilename(file.name);
+            const path = `catalog/${Date.now()}_${cleanFilename}`;
+
+            // Upload file (PDF or image)
+            const { error: uploadError } = await supabase.storage.from('images').upload(path, file);
             if (uploadError) throw uploadError;
 
             const { data: urlData } = supabase.storage.from('images').getPublicUrl(path);
 
-            // Insert catalog page
+            // Insert catalog entry
+            const fileType = file.type.includes('pdf') ? 'pdf' : 'image';
             const { error: insertError } = await supabase.from('catalog_pages').insert({
                 page_number: parseInt(pageNumber),
-                image_url: urlData.publicUrl
+                file_url: urlData.publicUrl,
+                file_type: fileType
             });
 
             if (insertError) throw insertError;
 
-            alert('Katalog sayfası eklendi!');
+            alert('Katalog dosyası eklendi!');
             catalogModal.classList.remove('show');
             addCatalogForm.reset();
             loadCatalog();

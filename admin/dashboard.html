@@ -308,8 +308,9 @@
                     <input type="number" id="catalog-page-number" required min="1">
                 </div>
                 <div class="form-group">
-                    <label>Sayfa Görseli</label>
-                    <input type="file" id="catalog-image" accept="image/*" required>
+                    <label>Katalog Dosyası (PDF veya Görsel)</label>
+                    <input type="file" id="catalog-file" accept="application/pdf,image/*" required>
+                    <p class="text-muted text-sm">PDF dosyaları otomatik olarak flipbook formatına dönüştürülecek</p>
                 </div>
                 <button type="submit" class="btn-primary full-width">Kaydet</button>
             </form>

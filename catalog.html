@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="./style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Set PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <style>
         .catalog-container {
             min-height: 100vh;
@@ -155,6 +160,27 @@
     <script type="module">
         import { supabase } from './src/supabase.js';
 
+        // Function to render PDF page to canvas
+        async function renderPDFPage(pdfUrl, pageNum) {
+            try {
+                const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+                const page = await pdf.getPage(pageNum);
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                const viewport = page.getViewport({ scale: 1.5 });
+
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                return canvas.toDataURL('image/jpeg', 0.9);
+            } catch (error) {
+                console.error('PDF render error:', error);
+                return null;
+            }
+        }
+
         async function loadCatalog() {
             const { data, error } = await supabase
                 .from('catalog_pages')
@@ -167,12 +193,32 @@
             }
 
             const flipbook = document.getElementById('flipbook');
-            flipbook.innerHTML = '';
+            flipbook.innerHTML = '<div class="page"><p style="color: #c9a961;">Katalog yükleniyor...</p></div>';
 
-            data.forEach((page, index) => {
+            // Process all catalog items
+            const pages = [];
+            for (const item of data) {
+                const fileUrl = item.file_url || item.image_url;
+                const fileType = item.file_type || 'image';
+
+                if (fileType === 'pdf') {
+                    // Render PDF to image
+                    const imageData = await renderPDFPage(fileUrl, 1);
+                    if (imageData) {
+                        pages.push({ number: item.page_number, imageUrl: imageData });
+                    }
+                } else {
+                    // Use image directly
+                    pages.push({ number: item.page_number, imageUrl: fileUrl });
+                }
+            }
+
+            // Clear and rebuild flipbook
+            flipbook.innerHTML = '';
+            pages.forEach((page) => {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
-                pageDiv.innerHTML = `<img src="${page.image_url}" alt="Sayfa ${page.page_number}">`;
+                pageDiv.innerHTML = `<img src="${page.imageUrl}" alt="Sayfa ${page.number}">`;
                 flipbook.appendChild(pageDiv);
             });
 
@@ -187,7 +233,7 @@
             });
 
             // Update page counter
-            const totalPages = data.length;
+            const totalPages = pages.length;
             document.getElementById('total-pages').textContent = totalPages;
 
             $('#flipbook').bind('turned', function (event, page) {
