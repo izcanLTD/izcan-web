@@ -404,28 +404,26 @@ async function loadProducts() {
             </div>`;
     });
 }
-
 /* --- CATALOG LOGIC --- */
 const catalogList = document.getElementById('catalog-list-admin');
 const addCatalogForm = document.getElementById('add-catalog-form');
 
 async function loadCatalog() {
     if (!catalogList) return;
-    const { data } = await supabase.from('catalog_pages').select('*').order('page_number', { ascending: true });
+    const { data } = await supabase.from('catalogs').select('*').order('created_at', { ascending: false });
     catalogList.innerHTML = '';
-    data?.forEach(page => {
+    data?.forEach(catalog => {
         const div = document.createElement('div');
         div.className = 'product-card';
-        const fileType = page.file_type || 'image';
-        const displayUrl = page.file_url || page.image_url;
-        const thumbnail = fileType === 'pdf' ? 'https://via.placeholder.com/200x300/1a1a1a/c9a961?text=PDF' : displayUrl;
 
         div.innerHTML = `
-            <button class="delete-btn" data-id="${page.id}" data-type="catalog_pages"><i class="fa-solid fa-trash"></i></button>
-            <img src="${thumbnail}" alt="Sayfa ${page.page_number}">
+            <button class="delete-btn" data-id="${catalog.id}" data-type="catalogs"><i class="fa-solid fa-trash"></i></button>
+            <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                <i class="fa-solid fa-file-pdf" style="font-size: 4rem; color: #c9a961;"></i>
+            </div>
             <div class="card-details">
-                <h3>${page.catalog_name || 'Katalog ' + page.page_number}</h3>
-                <p>Sayfa ${page.page_number} • ${fileType === 'pdf' ? 'PDF' : 'Görsel'}</p>
+                <h3>${catalog.name}</h3>
+                <p>${catalog.total_pages || 0} sayfa</p>
             </div>
         `;
         catalogList.appendChild(div);
@@ -435,23 +433,29 @@ async function loadCatalog() {
 if (addCatalogForm) {
     addCatalogForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const submitBtn = addCatalogForm.querySelector('button');
+        const submitBtn = addCatalogForm.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Kaydediliyor...';
+        submitBtn.textContent = 'Yükleniyor ve işleniyor...';
 
         try {
-            const catalogName = document.getElementById('catalog-name').value;
-            const pageNumber = document.getElementById('catalog-page-number').value;
-            const file = document.getElementById('catalog-file').files[0];
+            const catalogNameInput = document.getElementById('catalog-name');
+            const pdfFileInput = document.getElementById('catalog-pdf');
 
-            if (!file) {
-                alert('Lütfen bir dosya seçin!');
+            if (!catalogNameInput || !pdfFileInput) {
+                throw new Error('Form alanları bulunamadı');
+            }
+
+            const catalogName = catalogNameInput.value;
+            const pdfFile = pdfFileInput.files[0];
+
+            if (!pdfFile || !pdfFile.type.includes('pdf')) {
+                alert('Lütfen bir PDF dosyası seçin!');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Kaydet';
+                submitBtn.textContent = 'Yükle ve İşle';
                 return;
             }
 
-            // Sanitize filename - remove spaces, Turkish chars, special chars
+            // Sanitize filename
             const sanitizeFilename = (filename) => {
                 const ext = filename.substring(filename.lastIndexOf('.'));
                 const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.'));
@@ -471,27 +475,29 @@ if (addCatalogForm) {
                 return sanitized + ext.toLowerCase();
             };
 
-            const cleanFilename = sanitizeFilename(file.name);
-            const path = `catalog/${Date.now()}_${cleanFilename}`;
+            const cleanFilename = sanitizeFilename(pdfFile.name);
+            const path = `catalogs/${Date.now()}_${cleanFilename}`;
 
-            // Upload file (PDF or image)
-            const { error: uploadError } = await supabase.storage.from('images').upload(path, file);
+            // Upload PDF
+            const { error: uploadError } = await supabase.storage.from('images').upload(path, pdfFile);
             if (uploadError) throw uploadError;
 
             const { data: urlData } = supabase.storage.from('images').getPublicUrl(path);
 
-            // Insert catalog entry
-            const fileType = file.type.includes('pdf') ? 'pdf' : 'image';
-            const { error: insertError } = await supabase.from('catalog_pages').insert({
-                catalog_name: catalogName,
-                page_number: parseInt(pageNumber),
-                file_url: urlData.publicUrl,
-                file_type: fileType
+            // Get PDF page count using PDF.js
+            const pdf = await pdfjsLib.getDocument(urlData.publicUrl).promise;
+            const totalPages = pdf.numPages;
+
+            // Insert catalog
+            const { error: insertError } = await supabase.from('catalogs').insert({
+                name: catalogName,
+                pdf_url: urlData.publicUrl,
+                total_pages: totalPages
             });
 
             if (insertError) throw insertError;
 
-            alert('Katalog dosyası eklendi!');
+            alert(`Katalog başarıyla yüklendi! (${totalPages} sayfa)`);
             catalogModal.classList.remove('show');
             addCatalogForm.reset();
             loadCatalog();
@@ -499,7 +505,7 @@ if (addCatalogForm) {
             alert('Hata: ' + error.message);
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Kaydet';
+            submitBtn.textContent = 'Yükle ve İşle';
         }
     });
 }
