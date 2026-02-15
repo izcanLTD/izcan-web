@@ -109,7 +109,7 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .modal-close {
@@ -140,10 +140,17 @@
             text-align: center;
         }
 
-        #flipbook {
+        .flipbook-container {
+            position: relative;
             width: 800px;
             height: 600px;
             margin: 0 auto;
+        }
+
+        #flipbook {
+            width: 100%;
+            height: 100%;
+            position: relative;
         }
 
         #flipbook .page {
@@ -153,12 +160,35 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         #flipbook .page img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
+        }
+
+        .catalog-thumbnail {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .catalog-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .catalog-thumbnail i {
+            font-size: 5rem;
+            color: var(--color-gold);
         }
 
         .catalog-controls {
@@ -198,7 +228,7 @@
         }
 
         @media (max-width: 900px) {
-            #flipbook {
+            .flipbook-container {
                 width: 600px;
                 height: 450px;
             }
@@ -210,7 +240,7 @@
         }
 
         @media (max-width: 650px) {
-            #flipbook {
+            .flipbook-container {
                 width: 400px;
                 height: 300px;
             }
@@ -222,6 +252,10 @@
 
             .catalogs-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -248,9 +282,11 @@
     <div class="catalog-modal" id="catalog-modal">
         <button class="modal-close" onclick="closeModal()">×</button>
         <h2 class="modal-title" id="modal-title">Katalog</h2>
-        <div id="flipbook">
-            <div class="page">
-                <p class="loading-message">Yükleniyor...</p>
+        <div class="flipbook-container">
+            <div id="flipbook">
+                <div class="page">
+                    <p class="loading-message">Yükleniyor...</p>
+                </div>
             </div>
         </div>
         <div class="catalog-controls">
@@ -368,14 +404,34 @@
             catalogs = data;
             grid.innerHTML = '';
 
-            catalogs.forEach(catalog => {
+            // Generate thumbnails for each catalog
+            for (const catalog of catalogs) {
                 const card = document.createElement('div');
                 card.className = 'catalog-card';
                 card.onclick = () => openCatalog(catalog.id);
 
+                // Generate PDF thumbnail (first page)
+                let thumbnailHtml = '<i class="fa-solid fa-file-pdf"></i>';
+                try {
+                    const pdf = await pdfjsLib.getDocument(catalog.pdf_url).promise;
+                    const page = await pdf.getPage(1);
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 0.5 });
+
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    thumbnailHtml = `<img src="${thumbnailUrl}" alt="${catalog.name}">`;
+                } catch (err) {
+                    console.error('Thumbnail generation error:', err);
+                }
+
                 card.innerHTML = `
                     <div class="catalog-thumbnail">
-                        <i class="fa-solid fa-file-pdf"></i>
+                        ${thumbnailHtml}
                     </div>
                     <div class="catalog-info">
                         <h3>${catalog.name}</h3>
@@ -384,7 +440,7 @@
                 `;
 
                 grid.appendChild(card);
-            });
+            }
         }
 
         // Close modal on ESC key
