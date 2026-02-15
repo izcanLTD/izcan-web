@@ -262,13 +262,18 @@ button {
     background-size: cover;
     background-position: center;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
+    visibility: hidden;
+    /* Hide completely when not active */
+    transition: opacity 1s ease-in-out, visibility 1s;
     display: flex;
     align-items: center;
+    z-index: 1;
 }
 
 .slide.active {
     opacity: 1;
+    visibility: visible;
+    z-index: 2;
 }
 
 .slide-video {
