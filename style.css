@@ -113,7 +113,7 @@ button {
 }
 
 .hidden-desktop {
-    display: none;
+    display: none !important;
 }
 
 .hidden {
