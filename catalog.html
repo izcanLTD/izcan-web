@@ -400,8 +400,15 @@
             modal.classList.remove('active');
 
             // Destroy Turn.js instance
-            if ($('#flipbook').turn('is')) {
-                $('#flipbook').turn('destroy');
+            try {
+                const $flipbook = $('#flipbook');
+                if ($flipbook.data('turn')) {
+                    $flipbook.turn('destroy');
+                }
+                // Clear flipbook content
+                document.getElementById('flipbook').innerHTML = '';
+            } catch (e) {
+                console.log('Cleanup error:', e);
             }
         }
 
