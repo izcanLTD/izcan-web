@@ -440,6 +440,7 @@ if (addCatalogForm) {
         submitBtn.textContent = 'Kaydediliyor...';
 
         try {
+            const catalogName = document.getElementById('catalog-name').value;
             const pageNumber = document.getElementById('catalog-page-number').value;
             const file = document.getElementById('catalog-file').files[0];
 
@@ -482,6 +483,7 @@ if (addCatalogForm) {
             // Insert catalog entry
             const fileType = file.type.includes('pdf') ? 'pdf' : 'image';
             const { error: insertError } = await supabase.from('catalog_pages').insert({
+                catalog_name: catalogName,
                 page_number: parseInt(pageNumber),
                 file_url: urlData.publicUrl,
                 file_type: fileType
