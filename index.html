@@ -51,89 +51,129 @@
           </div>
         </div>
       </div>
-      <!-- ... code skip ... -->
-      <!-- About Section -->
-      <section id="about" class="section about-section">
-        <div class="container about-grid">
-          <div class="about-text">
-            <span class="eyebrow">Hakkımızda</span>
-            <h2 id="about-title">Tecrübe ve <span class="text-gold">Kalitenin Adresi</span></h2>
-            <p id="about-text">İzcan Orman Ürünleri olarak, yılların verdiği tecrübe ile sektörde öncü bir rol
-              üstleniyoruz. Modern üretim tesislerimizde, en kaliteli ham maddeleri ustalıkla işleyerek yaşam
-              alanlarınıza değer katıyoruz.</p>
-            <!-- ... code skip ... -->
-            <div class="contact-item">
-              <h3>Adres</h3>
-              <p id="contact-address">Organize Sanayi Bölgesi, 3. Cadde No:12<br>Bursa, Türkiye</p>
-            </div>
-            <div class="contact-item">
-              <h3>Telefon</h3>
-              <p id="contact-phone">+90 555 123 45 67</p>
-            </div>
-            <div class="contact-item">
-              <h3>E-posta</h3>
-              <p id="contact-email">info@izcanormanurunleri.com</p>
-            </div>
-          </div>
-          <div class="contact-form-wrapper">
-            <form class="contact-form">
-              <div class="form-group">
-                <input type="text" placeholder="Adınız Soyadınız" required>
-              </div>
-              <div class="form-group">
-                <input type="email" placeholder="E-posta Adresiniz" required>
-              </div>
-              <div class="form-group">
-                <input type="tel" placeholder="Telefon Numaranız">
-              </div>
-              <div class="form-group">
-                <textarea placeholder="Mesajınız" rows="5"></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary full-width">Gönder</button>
-            </form>
-          </div>
-        </div>
-      </section>
+      <!-- Slider controls will be added by JavaScript -->
+    </div>
+  </section>
 
-      <!-- Footer -->
-      <footer class="footer">
-        <div class="container footer-grid">
-          <div class="footer-col">
-            <a href="#" class="logo">İZCAN<span>ORMAN ÜRÜNLERİ</span></a>
-            <p class="mt-2">Kapı, dolap kapakları ve mobilya aksesuarlarında öncü üretim.</p>
-          </div>
-          <div class="footer-col">
-            <h4>Hızlı Menü</h4>
-            <ul>
-              <li><a href="#home">Ana Sayfa</a></li>
-              <li><a href="#products">Ürünler</a></li>
-              <li><a href="#about">Hakkımızda</a></li>
-              <li><a href="#contact">İletişim</a></li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h4>Ürünler</h4>
-            <ul>
-              <li><a href="#">Kapı Modelleri</a></li>
-              <li><a href="#">Dolap Kapakları</a></li>
-              <li><a href="#">Duvar Panelleri</a></li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h4>Sosyal Medya</h4>
-            <div class="social-icons">
-              <a href="#">IG</a>
-              <a href="#">FB</a>
-              <a href="#">LN</a>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom text-center">
-          <p>&copy; 2024 İzcan Orman Ürünleri Ltd. Şti. Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+  <!-- Products Section -->
+  <section id="products" class="section bg-dark">
+    <div class="container">
+      <h2 class="section-title text-center">Ürünlerimiz</h2>
+      <p class="section-subtitle text-center">Kaliteli ve modern tasarımlarımızla tanışın</p>
+      <div class="product-grid">
+        <!-- Products loaded dynamically from Supabase -->
+      </div>
+    </div>
+  </section>
 
-      <script type="module" src="/main.js"></script>
+  <!-- Gallery Section -->
+  <section id="gallery" class="section">
+    <div class="container">
+      <h2 class="section-title text-center">Galeri</h2>
+      <p class="section-subtitle text-center">Projelerimizden kareler</p>
+      <div class="gallery-grid">
+        <!-- Gallery loaded dynamically from Supabase -->
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="section about-section bg-dark">
+    <div class="container about-grid">
+      <div class="about-text">
+        <span class="eyebrow">Hakkımızda</span>
+        <h2 id="about-title">Tecrübe ve <span class="text-gold">Kalitenin Adresi</span></h2>
+        <p id="about-text">İzcan Orman Ürünleri olarak, yılların verdiği tecrübe ile sektörde öncü bir rol
+          üstleniyoruz. Modern üretim tesislerimizde, en kaliteli ham maddeleri ustalıkla işleyerek yaşam
+          alanlarınıza değer katıyoruz.</p>
+      </div>
+      <div class="about-image" style="position: relative;">
+        <img src="https://images.unsplash.com/photo-1615971677499-5467cbab01c0?q=80&w=800&auto=format&fit=crop"
+          alt="About" style="width: 100%; border-radius: 4px;">
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section contact-section">
+    <div class="container">
+      <h2 class="section-title text-center">İletişim</h2>
+      <p class="section-subtitle text-center">Bizimle iletişime geçin</p>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <h3>Adres</h3>
+            <p id="contact-address">Organize Sanayi Bölgesi, 3. Cadde No:12<br>Bursa, Türkiye</p>
+          </div>
+          <div class="contact-item">
+            <h3>Telefon</h3>
+            <p id="contact-phone">+90 555 123 45 67</p>
+          </div>
+          <div class="contact-item">
+            <h3>E-posta</h3>
+            <p id="contact-email">info@izcanormanurunleri.com</p>
+          </div>
+        </div>
+        <div class="contact-form-wrapper">
+          <form class="contact-form">
+            <div class="form-group">
+              <input type="text" placeholder="Adınız Soyadınız" required>
+            </div>
+            <div class="form-group">
+              <input type="email" placeholder="E-posta Adresiniz" required>
+            </div>
+            <div class="form-group">
+              <input type="tel" placeholder="Telefon Numaranız">
+            </div>
+            <div class="form-group">
+              <textarea placeholder="Mesajınız" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary full-width">Gönder</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <a href="#" class="logo">İZCAN<span>ORMAN ÜRÜNLERİ</span></a>
+        <p class="mt-2">Kapı, dolap kapakları ve mobilya aksesuarlarında öncü üretim.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Hızlı Menü</h4>
+        <ul>
+          <li><a href="#home">Ana Sayfa</a></li>
+          <li><a href="#products">Ürünler</a></li>
+          <li><a href="#about">Hakkımızda</a></li>
+          <li><a href="#contact">İletişim</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Ürünler</h4>
+        <ul>
+          <li><a href="#">Kapı Modelleri</a></li>
+          <li><a href="#">Dolap Kapakları</a></li>
+          <li><a href="#">Duvar Panelleri</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Sosyal Medya</h4>
+        <div class="social-icons">
+          <a href="#">IG</a>
+          <a href="#">FB</a>
+          <a href="#">LN</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom text-center">
+      <p>&copy; 2024 İzcan Orman Ürünleri Ltd. Şti. Tüm hakları saklıdır.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/main.js"></script>
 </body>
 
 </html>
