@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadSlider();
     await loadProducts();
     await loadGallery();
+    await loadSocialLinks();
+    await loadMapLocation();
 
     setupIntersectionObserver();
 });
@@ -166,6 +168,47 @@ async function loadGallery() {
             }
             grid.innerHTML += `<div class="gallery-item item-${index + 1}">${content}</div>`;
         });
+    }
+}
+
+/* --- SOCIAL MEDIA LINKS --- */
+async function loadSocialLinks() {
+    const { data, error } = await supabase.from('site_content').select('*');
+    if (!error && data) {
+        const socialMap = {
+            'social_instagram': 'social-instagram',
+            'social_facebook': 'social-facebook',
+            'social_linkedin': 'social-linkedin'
+        };
+
+        data.forEach(item => {
+            const elementId = socialMap[item.key];
+            if (elementId) {
+                const el = document.getElementById(elementId);
+                if (el && item.value) {
+                    el.href = item.value;
+                }
+            }
+        });
+    }
+}
+
+/* --- MAP LOCATION --- */
+async function loadMapLocation() {
+    const { data, error } = await supabase.from('site_content').select('*');
+    if (!error && data) {
+        let latitude = '40.2';
+        let longitude = '29.0';
+
+        data.forEach(item => {
+            if (item.key === 'map_latitude' && item.value) latitude = item.value;
+            if (item.key === 'map_longitude' && item.value) longitude = item.value;
+        });
+
+        const mapIframe = document.getElementById('google-map');
+        if (mapIframe) {
+            mapIframe.src = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${latitude},${longitude}&zoom=15`;
+        }
     }
 }
 

@@ -9,6 +9,7 @@
     content="İzcan Orman Ürünleri - Modern kapı, dolap kapakları ve mobilya aksesuarları üreticisi." />
   <title>İzcan Orman Ürünleri | Kapı ve Mobilya Çözümleri</title>
   <link rel="stylesheet" href="./style.css?v=5" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 
 <body>
@@ -132,6 +133,14 @@
           </form>
         </div>
       </div>
+      <!-- Google Maps -->
+      <div class="map-container" id="map-container"
+        style="margin-top: 3rem; height: 400px; border-radius: 8px; overflow: hidden;">
+        <iframe id="google-map" width="100%" height="100%" style="border:0;" loading="lazy" allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3048.4449856193744!2d29.0!3d40.2!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDEyJzAwLjAiTiAyOcKwMDAnMDAuMCJF!5e0!3m2!1sen!2str!4v1234567890">
+        </iframe>
+      </div>
     </div>
   </section>
 
@@ -162,9 +171,15 @@
       <div class="footer-col">
         <h4>Sosyal Medya</h4>
         <div class="social-icons">
-          <a href="#">IG</a>
-          <a href="#">FB</a>
-          <a href="#">LN</a>
+          <a href="#" id="social-instagram" target="_blank" rel="noopener" title="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" id="social-facebook" target="_blank" rel="noopener" title="Facebook">
+            <i class="fab fa-facebook"></i>
+          </a>
+          <a href="#" id="social-linkedin" target="_blank" rel="noopener" title="LinkedIn">
+            <i class="fab fa-linkedin"></i>
+          </a>
         </div>
       </div>
     </div>

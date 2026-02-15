@@ -584,6 +584,30 @@ button {
     color: var(--color-gold);
 }
 
+.social-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-icons a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--color-surface-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-main);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    background-color: var(--color-gold);
+    color: var(--color-primary);
+    transform: translateY(-3px);
+}
+
 .footer-bottom {
     padding-top: 2rem;
     border-top: 1px solid #222;
