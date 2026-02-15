@@ -91,7 +91,7 @@
                 <div class="section-header">
                     <h1>Katalog Yönetimi</h1>
                     <button id="open-catalog-modal" class="btn-primary">
-                        <i class="fa-solid fa-plus"></i> Yeni Sayfa Ekle
+                        <i class="fa-solid fa-plus"></i> Yeni Katalog Yükle
                     </button>
                 </div>
                 <div class="products-grid" id="catalog-list-admin">
@@ -297,26 +297,23 @@
         </div>
     </div>
 
-    <!-- Add Catalog Page Modal -->
+    <!-- Add Catalog Modal -->
     <div id="catalog-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Katalog Sayfası Ekle</h2>
+            <h2>Katalog Yükle</h2>
             <form id="add-catalog-form">
                 <div class="form-group">
                     <label>Katalog İsmi</label>
                     <input type="text" id="catalog-name" required placeholder="Örn: 2024 Ürün Kataloğu">
                 </div>
                 <div class="form-group">
-                    <label>Sayfa Numarası</label>
-                    <input type="number" id="catalog-page-number" required min="1">
+                    <label>PDF Dosyası</label>
+                    <input type="file" id="catalog-pdf" accept="application/pdf" required>
+                    <p class="text-muted text-sm">PDF'in tüm sayfaları otomatik olarak flipbook formatına dönüştürülecek
+                    </p>
                 </div>
-                <div class="form-group">
-                    <label>Katalog Dosyası (PDF veya Görsel)</label>
-                    <input type="file" id="catalog-file" accept="application/pdf,image/*" required>
-                    <p class="text-muted text-sm">PDF dosyaları otomatik olarak flipbook formatına dönüştürülecek</p>
-                </div>
-                <button type="submit" class="btn-primary full-width">Kaydet</button>
+                <button type="submit" class="btn-primary full-width">Yükle ve İşle</button>
             </form>
         </div>
     </div>

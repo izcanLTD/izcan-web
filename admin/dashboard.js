@@ -331,7 +331,7 @@ document.addEventListener('click', async (e) => {
                 if (type === 'products') loadProducts();
                 if (type === 'slides') loadSlider();
                 if (type === 'gallery') loadGallery();
-                if (type === 'catalog_pages') loadCatalog();
+                if (type === 'catalogs') loadCatalog();
             } else { alert('Hata: ' + error.message); }
         }
     }

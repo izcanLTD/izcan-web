@@ -144,6 +144,11 @@
         <div class="catalog-header">
             <h1>Ürün Kataloğumuz</h1>
             <p>Sayfaları çevirmek için tıklayın veya sürükleyin</p>
+            <select id="catalog-selector"
+                style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-surface-light); color: var(--color-text-main); border: 1px solid var(--color-gold); border-radius: 4px; font-size: 1rem;"
+                onchange="loadCatalog(parseInt(this.value))">
+                <!-- Options loaded dynamically -->
+            </select>
         </div>
 
         <div id="flipbook">
