@@ -338,8 +338,15 @@
             modalTitle.textContent = currentCatalog.name;
 
             // Destroy existing Turn.js instance if any
-            if (typeof $.fn.turn !== 'undefined' && $('#flipbook').turn('is')) {
-                $('#flipbook').turn('destroy');
+            try {
+                if (typeof $.fn.turn !== 'undefined') {
+                    const $flipbook = $('#flipbook');
+                    if ($flipbook.data('turn')) {
+                        $flipbook.turn('destroy');
+                    }
+                }
+            } catch (e) {
+                console.log('No existing Turn.js instance to destroy');
             }
 
             flipbook.innerHTML = '<div class="page"><p class="loading-message">Katalog yükleniyor...</p></div>';
@@ -414,30 +421,15 @@
             catalogs = data;
             grid.innerHTML = '';
 
-            // Generate thumbnails for each catalog
-            for (const catalog of catalogs) {
+            catalogs.forEach(catalog => {
                 const card = document.createElement('div');
                 card.className = 'catalog-card';
                 card.onclick = () => openCatalog(catalog.id);
 
-                // Generate PDF thumbnail (first page)
-                let thumbnailHtml = '<i class="fa-solid fa-file-pdf"></i>';
-                try {
-                    const pdf = await pdfjsLib.getDocument(catalog.pdf_url).promise;
-                    const page = await pdf.getPage(1);
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    const viewport = page.getViewport({ scale: 0.3 }); // Reduced scale for faster loading
-
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-
-                    await page.render({ canvasContext: context, viewport: viewport }).promise;
-                    const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.6); // Lower quality for speed
-                    thumbnailHtml = `<img src="${thumbnailUrl}" alt="${catalog.name}">`;
-                } catch (err) {
-                    console.error('Thumbnail generation error:', err);
-                }
+                // Use stored thumbnail or fallback to PDF icon
+                const thumbnailHtml = catalog.thumbnail_url
+                    ? `<img src="${catalog.thumbnail_url}" alt="${catalog.name}">`
+                    : '<i class="fa-solid fa-file-pdf"></i>';
 
                 card.innerHTML = `
                     <div class="catalog-thumbnail">
@@ -450,7 +442,7 @@
                 `;
 
                 grid.appendChild(card);
-            }
+            });
         }
 
         // Close modal on ESC key

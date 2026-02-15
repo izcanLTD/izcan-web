@@ -476,22 +476,52 @@ if (addCatalogForm) {
             };
 
             const cleanFilename = sanitizeFilename(pdfFile.name);
-            const path = `catalogs/${Date.now()}_${cleanFilename}`;
+            const timestamp = Date.now();
+            const pdfPath = `catalogs/${timestamp}_${cleanFilename}`;
 
             // Upload PDF
-            const { error: uploadError } = await supabase.storage.from('images').upload(path, pdfFile);
+            submitBtn.textContent = 'PDF yükleniyor...';
+            const { error: uploadError } = await supabase.storage.from('images').upload(pdfPath, pdfFile);
             if (uploadError) throw uploadError;
 
-            const { data: urlData } = supabase.storage.from('images').getPublicUrl(path);
+            const { data: urlData } = supabase.storage.from('images').getPublicUrl(pdfPath);
 
-            // Get PDF page count using PDF.js
+            // Get PDF page count and generate thumbnail
+            submitBtn.textContent = 'PDF işleniyor...';
             const pdf = await pdfjsLib.getDocument(urlData.publicUrl).promise;
             const totalPages = pdf.numPages;
 
-            // Insert catalog
+            // Generate thumbnail from first page
+            submitBtn.textContent = 'Önizleme oluşturuluyor...';
+            const page = await pdf.getPage(1);
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const viewport = page.getViewport({ scale: 0.5 });
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+            // Convert canvas to blob
+            const thumbnailBlob = await new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/jpeg', 0.8);
+            });
+
+            // Upload thumbnail
+            submitBtn.textContent = 'Önizleme yükleniyor...';
+            const thumbnailPath = `catalogs/thumbnails/${timestamp}_${cleanFilename.replace('.pdf', '.jpg')}`;
+            const { error: thumbUploadError } = await supabase.storage.from('images').upload(thumbnailPath, thumbnailBlob);
+            if (thumbUploadError) throw thumbUploadError;
+
+            const { data: thumbUrlData } = supabase.storage.from('images').getPublicUrl(thumbnailPath);
+
+            // Insert catalog with thumbnail
+            submitBtn.textContent = 'Kaydediliyor...';
             const { error: insertError } = await supabase.from('catalogs').insert({
                 name: catalogName,
                 pdf_url: urlData.publicUrl,
+                thumbnail_url: thumbUrlData.publicUrl,
                 total_pages: totalPages
             });
 
