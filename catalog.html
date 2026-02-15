@@ -6,21 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog - İzcan Orman Ürünleri</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        // Set PDF.js worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
     <style>
-        .catalog-container {
+        .catalog-page {
             min-height: 100vh;
             background-color: var(--color-primary);
             padding: 100px 20px 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .catalog-header {
@@ -38,6 +35,109 @@
         .catalog-header p {
             color: var(--color-text-muted);
             font-size: 1.1rem;
+        }
+
+        .catalogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .catalog-card {
+            background: var(--color-surface-light);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .catalog-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-gold);
+            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.2);
+        }
+
+        .catalog-thumbnail {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .catalog-thumbnail i {
+            font-size: 5rem;
+            color: var(--color-gold);
+        }
+
+        .catalog-info {
+            padding: 1.5rem;
+        }
+
+        .catalog-info h3 {
+            color: var(--color-gold);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .catalog-info p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .catalog-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            overflow: auto;
+        }
+
+        .catalog-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--color-gold);
+            color: var(--color-primary);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--color-gold-hover);
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            color: var(--color-gold);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
         #flipbook {
@@ -66,6 +166,7 @@
             display: flex;
             gap: 1rem;
             align-items: center;
+            justify-content: center;
         }
 
         .catalog-controls button {
@@ -84,31 +185,16 @@
             transform: translateY(-2px);
         }
 
-        .catalog-controls button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .page-number {
             color: var(--color-text-main);
             font-size: 1.1rem;
         }
 
-        .back-link {
-            position: fixed;
-            top: 20px;
-            left: 20px;
+        .loading-message {
             color: var(--color-gold);
-            text-decoration: none;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 1000;
-        }
-
-        .back-link:hover {
-            color: var(--color-gold-hover);
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 2rem;
         }
 
         @media (max-width: 900px) {
@@ -133,28 +219,40 @@
                 width: 200px;
                 height: 300px;
             }
+
+            .catalogs-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
-    <a href="/" class="back-link">← Ana Sayfaya Dön</a>
+    <a href="/" class="back-link"
+        style="position: fixed; top: 20px; left: 20px; color: var(--color-gold); text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; z-index: 1000;">
+        ← Ana Sayfaya Dön
+    </a>
 
-    <div class="catalog-container">
+    <div class="catalog-page">
         <div class="catalog-header">
-            <h1>Ürün Kataloğumuz</h1>
-            <p>Sayfaları çevirmek için tıklayın veya sürükleyin</p>
-            <select id="catalog-selector"
-                style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-surface-light); color: var(--color-text-main); border: 1px solid var(--color-gold); border-radius: 4px; font-size: 1rem;"
-                onchange="loadCatalog(parseInt(this.value))">
-                <!-- Options loaded dynamically -->
-            </select>
+            <h1>Ürün Kataloglarımız</h1>
+            <p>Katalogları görüntülemek için tıklayın</p>
         </div>
 
+        <div class="catalogs-grid" id="catalogs-grid">
+            <div class="loading-message">Kataloglar yükleniyor...</div>
+        </div>
+    </div>
+
+    <!-- Flipbook Modal -->
+    <div class="catalog-modal" id="catalog-modal">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <h2 class="modal-title" id="modal-title">Katalog</h2>
         <div id="flipbook">
-            <!-- Pages will be loaded dynamically -->
+            <div class="page">
+                <p class="loading-message">Yükleniyor...</p>
+            </div>
         </div>
-
         <div class="catalog-controls">
             <button id="prev-btn">← Önceki</button>
             <span class="page-number">Sayfa <span id="current-page">1</span> / <span id="total-pages">1</span></span>
@@ -165,67 +263,61 @@
     <script type="module">
         import { supabase } from './src/supabase.js';
 
-        // Function to render PDF page to canvas
-        async function renderPDFPage(pdfUrl, pageNum) {
+        let catalogs = [];
+        let currentCatalog = null;
+
+        // Render all pages of a PDF
+        async function renderAllPDFPages(pdfUrl, totalPages) {
+            const pages = [];
             try {
                 const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-                const page = await pdf.getPage(pageNum);
 
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                const viewport = page.getViewport({ scale: 1.5 });
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 1.5 });
 
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
 
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
-                return canvas.toDataURL('image/jpeg', 0.9);
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    pages.push(canvas.toDataURL('image/jpeg', 0.9));
+                }
             } catch (error) {
                 console.error('PDF render error:', error);
-                return null;
             }
+            return pages;
         }
 
-        async function loadCatalog() {
-            const { data, error } = await supabase
-                .from('catalog_pages')
-                .select('*')
-                .order('page_number', { ascending: true });
+        window.openCatalog = async function (catalogId) {
+            currentCatalog = catalogs.find(c => c.id === catalogId);
+            if (!currentCatalog) return;
 
-            if (error || !data || data.length === 0) {
-                document.getElementById('flipbook').innerHTML = '<div class="page"><p style="color: #666;">Katalog henüz yüklenmedi.</p></div>';
-                return;
-            }
-
+            const modal = document.getElementById('catalog-modal');
+            const modalTitle = document.getElementById('modal-title');
             const flipbook = document.getElementById('flipbook');
-            flipbook.innerHTML = '<div class="page"><p style="color: #c9a961;">Katalog yükleniyor...</p></div>';
 
-            // Process all catalog items
-            const pages = [];
-            for (const item of data) {
-                const fileUrl = item.file_url || item.image_url;
-                const fileType = item.file_type || 'image';
+            modal.classList.add('active');
+            modalTitle.textContent = currentCatalog.name;
+            flipbook.innerHTML = '<div class="page"><p class="loading-message">Katalog yükleniyor...</p></div>';
 
-                if (fileType === 'pdf') {
-                    // Render PDF to image
-                    const imageData = await renderPDFPage(fileUrl, 1);
-                    if (imageData) {
-                        pages.push({ number: item.page_number, imageUrl: imageData });
-                    }
-                } else {
-                    // Use image directly
-                    pages.push({ number: item.page_number, imageUrl: fileUrl });
-                }
-            }
+            // Render all PDF pages
+            const pages = await renderAllPDFPages(currentCatalog.pdf_url, currentCatalog.total_pages);
 
             // Clear and rebuild flipbook
             flipbook.innerHTML = '';
-            pages.forEach((page) => {
+            pages.forEach((pageImage, index) => {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
-                pageDiv.innerHTML = `<img src="${page.imageUrl}" alt="Sayfa ${page.number}">`;
+                pageDiv.innerHTML = `<img src="${pageImage}" alt="Sayfa ${index + 1}">`;
                 flipbook.appendChild(pageDiv);
             });
+
+            // Destroy existing Turn.js instance if any
+            if ($('#flipbook').turn('is')) {
+                $('#flipbook').turn('destroy');
+            }
 
             // Initialize Turn.js
             $('#flipbook').turn({
@@ -238,24 +330,69 @@
             });
 
             // Update page counter
-            const totalPages = pages.length;
-            document.getElementById('total-pages').textContent = totalPages;
+            document.getElementById('total-pages').textContent = pages.length;
+            document.getElementById('current-page').textContent = '1';
 
             $('#flipbook').bind('turned', function (event, page) {
                 document.getElementById('current-page').textContent = page;
             });
 
             // Control buttons
-            document.getElementById('prev-btn').addEventListener('click', () => {
-                $('#flipbook').turn('previous');
-            });
+            document.getElementById('prev-btn').onclick = () => $('#flipbook').turn('previous');
+            document.getElementById('next-btn').onclick = () => $('#flipbook').turn('next');
+        }
 
-            document.getElementById('next-btn').addEventListener('click', () => {
-                $('#flipbook').turn('next');
+        window.closeModal = function () {
+            const modal = document.getElementById('catalog-modal');
+            modal.classList.remove('active');
+
+            // Destroy Turn.js instance
+            if ($('#flipbook').turn('is')) {
+                $('#flipbook').turn('destroy');
+            }
+        }
+
+        async function loadCatalogs() {
+            const grid = document.getElementById('catalogs-grid');
+
+            const { data, error } = await supabase
+                .from('catalogs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = '<div class="loading-message">Henüz katalog yüklenmedi.</div>';
+                return;
+            }
+
+            catalogs = data;
+            grid.innerHTML = '';
+
+            catalogs.forEach(catalog => {
+                const card = document.createElement('div');
+                card.className = 'catalog-card';
+                card.onclick = () => openCatalog(catalog.id);
+
+                card.innerHTML = `
+                    <div class="catalog-thumbnail">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div class="catalog-info">
+                        <h3>${catalog.name}</h3>
+                        <p><i class="fa-solid fa-book"></i> ${catalog.total_pages} sayfa</p>
+                    </div>
+                `;
+
+                grid.appendChild(card);
             });
         }
 
-        loadCatalog();
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        loadCatalogs();
     </script>
 </body>
 
