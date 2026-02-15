@@ -336,6 +336,12 @@
 
             modal.classList.add('active');
             modalTitle.textContent = currentCatalog.name;
+
+            // Destroy existing Turn.js instance if any
+            if (typeof $.fn.turn !== 'undefined' && $('#flipbook').turn('is')) {
+                $('#flipbook').turn('destroy');
+            }
+
             flipbook.innerHTML = '<div class="page"><p class="loading-message">Katalog yükleniyor...</p></div>';
 
             // Render all PDF pages
@@ -350,32 +356,36 @@
                 flipbook.appendChild(pageDiv);
             });
 
-            // Destroy existing Turn.js instance if any
-            if ($('#flipbook').turn('is')) {
-                $('#flipbook').turn('destroy');
-            }
+            // Wait for DOM update, then initialize Turn.js
+            setTimeout(() => {
+                try {
+                    $('#flipbook').turn({
+                        width: 800,
+                        height: 600,
+                        autoCenter: true,
+                        elevation: 50,
+                        gradients: true,
+                        duration: 1000,
+                        acceleration: true,
+                        display: 'double'
+                    });
 
-            // Initialize Turn.js
-            $('#flipbook').turn({
-                width: 800,
-                height: 600,
-                autoCenter: true,
-                elevation: 50,
-                gradients: true,
-                duration: 1000
-            });
+                    // Update page counter
+                    document.getElementById('total-pages').textContent = pages.length;
+                    document.getElementById('current-page').textContent = '1';
 
-            // Update page counter
-            document.getElementById('total-pages').textContent = pages.length;
-            document.getElementById('current-page').textContent = '1';
+                    $('#flipbook').bind('turned', function (event, page) {
+                        document.getElementById('current-page').textContent = page;
+                    });
 
-            $('#flipbook').bind('turned', function (event, page) {
-                document.getElementById('current-page').textContent = page;
-            });
-
-            // Control buttons
-            document.getElementById('prev-btn').onclick = () => $('#flipbook').turn('previous');
-            document.getElementById('next-btn').onclick = () => $('#flipbook').turn('next');
+                    // Control buttons
+                    document.getElementById('prev-btn').onclick = () => $('#flipbook').turn('previous');
+                    document.getElementById('next-btn').onclick = () => $('#flipbook').turn('next');
+                } catch (error) {
+                    console.error('Turn.js initialization error:', error);
+                    alert('Flipbook yüklenirken hata oluştu. Lütfen sayfayı yenileyin.');
+                }
+            }, 100);
         }
 
         window.closeModal = function () {
@@ -417,13 +427,13 @@
                     const page = await pdf.getPage(1);
                     const canvas = document.createElement('canvas');
                     const context = canvas.getContext('2d');
-                    const viewport = page.getViewport({ scale: 0.5 });
+                    const viewport = page.getViewport({ scale: 0.3 }); // Reduced scale for faster loading
 
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
 
                     await page.render({ canvasContext: context, viewport: viewport }).promise;
-                    const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.6); // Lower quality for speed
                     thumbnailHtml = `<img src="${thumbnailUrl}" alt="${catalog.name}">`;
                 } catch (err) {
                     console.error('Thumbnail generation error:', err);
