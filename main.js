@@ -79,7 +79,8 @@ async function loadSlider() {
                 <h1>${slide.title || ''}</h1>
                 <p>${slide.subtitle || ''}</p>
                 <div class="hero-btns">
-                    <a href="#products" class="btn btn-primary">Ürünleri Gör</a>
+                    <a href="/catalog.html" class="btn btn-primary">Kataloğu İncele</a>
+                    <a href="#contact" class="btn btn-outline">İletişime Geç</a>
                 </div>
             </div>
         `;
