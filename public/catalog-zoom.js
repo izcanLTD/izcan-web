@@ -14,8 +14,15 @@ function initializeCatalogZoom() {
     // Add magnifier cursor on hover
     flipbookContainer.style.cursor = 'zoom-in';
 
+    let isToggling = false;
+
     // Click to toggle zoom
     flipbookContainer.addEventListener('click', (e) => {
+        if (isToggling) return;
+        isToggling = true;
+
+        setTimeout(() => { isToggling = false; }, 500);
+
         e.stopPropagation();
 
         if (!isZoomed) {
@@ -27,7 +34,6 @@ function initializeCatalogZoom() {
             flipbookContainer.style.cursor = 'zoom-out';
             flipbookContainer.style.overflow = 'auto';
             isZoomed = true;
-            console.log('Zoomed in to 2x');
         } else {
             // Zoom out
             currentZoom = 1;
@@ -35,9 +41,8 @@ function initializeCatalogZoom() {
             flipbookContainer.style.cursor = 'zoom-in';
             flipbookContainer.style.overflow = 'hidden';
             isZoomed = false;
-            console.log('Zoomed out to 1x');
         }
-    });
+    }, { capture: true });
 
     // Reset zoom when modal closes
     const modal = document.getElementById('catalog-modal');
