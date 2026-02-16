@@ -39,6 +39,9 @@
                 <button class="nav-item" data-tab="catalog">
                     <i class="fa-solid fa-book"></i> Katalog
                 </button>
+                <button class="nav-item" data-tab="messages">
+                    <i class="fa-solid fa-envelope"></i> Mesajlar
+                </button>
                 <button class="nav-item" data-tab="content">
                     <i class="fa-solid fa-pen-to-square"></i> Site Metinleri
                 </button>
@@ -103,6 +106,22 @@
                 </div>
                 <div class="products-grid" id="catalog-list-admin">
                     <!-- Dynamic Catalog Pages -->
+                </div>
+            </section>
+
+            <!-- Messages Section -->
+            <section id="messages" class="content-section">
+                <div class="section-header">
+                    <h1>Mesajlar</h1>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">Tümü</button>
+                        <button class="filter-btn" data-filter="unread">Okunmadı</button>
+                        <button class="filter-btn" data-filter="read">Okundu</button>
+                        <button class="filter-btn" data-filter="replied">Cevaplandı</button>
+                    </div>
+                </div>
+                <div class="messages-list" id="messages-list">
+                    <!-- Dynamic Messages -->
                 </div>
             </section>
 
@@ -321,6 +340,35 @@
                     </p>
                 </div>
                 <button type="submit" class="btn-primary full-width">Yükle ve İşle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reply Modal -->
+    <div class="modal" id="reply-modal">
+        <div class="modal-content">
+            <span class="close-modal"
+                onclick="document.getElementById('reply-modal').classList.remove('show')">&times;</span>
+            <h2>Mesajı Yanıtla</h2>
+            <form id="reply-form">
+                <input type="hidden" id="reply-message-id">
+                <div class="form-group">
+                    <label>Gönderen</label>
+                    <input type="text" id="reply-to-name" readonly>
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" id="reply-to-email" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Orijinal Mesaj</label>
+                    <textarea id="reply-original-message" rows="4" readonly></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Yanıtınız</label>
+                    <textarea id="reply-text" rows="6" placeholder="Yanıtınızı yazın..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Gönder</button>
             </form>
         </div>
     </div>

@@ -239,14 +239,66 @@ function setupHeaderScroll() {
     }
 }
 
+/* --- INTERSECTION OBSERVER --- */
 function setupIntersectionObserver() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('fade-in-up');
+                entry.target.classList.add('fade-in-up'); // Changed from 'visible' to 'fade-in-up' to match original
                 observer.unobserve(entry.target);
             }
         });
     }, { threshold: 0.1 });
-    document.querySelectorAll('.product-card, .section-title').forEach(el => observer.observe(el));
+    document.querySelectorAll('.product-card, .section-title, .fade-in').forEach(el => observer.observe(el)); // Added .fade-in
+}
+
+/* --- CONTACT FORM --- */
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Gönderiliyor...';
+
+        try {
+            const formData = {
+                name: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email-input').value,
+                phone: document.getElementById('contact-phone-input').value || null,
+                message: document.getElementById('contact-message').value
+            };
+
+            // Save to database
+            const { error: dbError } = await supabase
+                .from('contact_messages')
+                .insert([formData]);
+
+            if (dbError) throw dbError;
+
+            // Send email notification via Cloudflare Worker
+            try {
+                await fetch('/api/send-contact-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+            } catch (emailError) {
+                console.error('Email notification error:', emailError);
+                // Don't fail the whole operation if email fails
+            }
+
+            // Success
+            alert('Mesajınız başarıyla gönderildi! En kısa sürede size dönüş yapacağız.');
+            contactForm.reset();
+        } catch (error) {
+            console.error('Form submission error:', error);
+            alert('Bir hata oluştu. Lütfen tekrar deneyin veya doğrudan bize ulaşın.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
 }

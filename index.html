@@ -106,33 +106,42 @@
       <div class="contact-grid">
         <div class="contact-info">
           <div class="contact-item">
-            <h3>Adres</h3>
-            <p id="contact-address">Organize Sanayi Bölgesi, 3. Cadde No:12<br>Bursa, Türkiye</p>
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <h3>Adres</h3>
+              <p id="contact-address">Yükleniyor...</p>
+            </div>
           </div>
           <div class="contact-item">
-            <h3>Telefon</h3>
-            <p id="contact-phone">+90 555 123 45 67</p>
+            <i class="fas fa-phone"></i>
+            <div>
+              <h3>Telefon</h3>
+              <p id="contact-phone">Yükleniyor...</p>
+            </div>
           </div>
           <div class="contact-item">
-            <h3>E-posta</h3>
-            <p id="contact-email">info@izcanormanurunleri.com</p>
+            <i class="fas fa-envelope"></i>
+            <div>
+              <h3>E-posta</h3>
+              <p id="contact-email">Yükleniyor...</p>
+            </div>
           </div>
         </div>
         <div class="contact-form-wrapper">
-          <form class="contact-form">
+          <form class="contact-form" id="contact-form">
             <div class="form-group">
-              <input type="text" placeholder="Adınız Soyadınız" required>
+              <input type="text" id="contact-name" name="name" placeholder="Adınız Soyadınız" required>
             </div>
             <div class="form-group">
-              <input type="email" placeholder="E-posta Adresiniz" required>
+              <input type="email" id="contact-email-input" name="email" placeholder="E-posta Adresiniz" required>
             </div>
             <div class="form-group">
-              <input type="tel" placeholder="Telefon Numaranız">
+              <input type="tel" id="contact-phone-input" name="phone" placeholder="Telefon Numaranız">
             </div>
             <div class="form-group">
-              <textarea placeholder="Mesajınız" rows="5"></textarea>
+              <textarea id="contact-message" name="message" rows="5" placeholder="Mesajınız" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary full-width">Gönder</button>
+            <button type="submit" class="btn btn-primary">Gönder</button>
           </form>
         </div>
       </div>
