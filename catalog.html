@@ -1,1 +1,469 @@
--NoNewline
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog - İzcan Orman Ürünleri</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="/logo.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <style>
+        .catalog-page {
+            min-height: 100vh;
+            background-color: var(--color-primary);
+            padding: 100px 20px 50px;
+        }
+
+        .catalog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .catalog-header h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--color-gold);
+            margin-bottom: 1rem;
+        }
+
+        .catalog-header p {
+            color: var(--color-text-muted);
+            font-size: 1.1rem;
+        }
+
+        .catalogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .catalog-card {
+            background: var(--color-surface-light);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .catalog-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-gold);
+            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.2);
+        }
+
+        .catalog-thumbnail {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .catalog-thumbnail i {
+            font-size: 5rem;
+            color: var(--color-gold);
+        }
+
+        .catalog-info {
+            padding: 1.5rem;
+        }
+
+        .catalog-info h3 {
+            color: var(--color-gold);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .catalog-info p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .catalog-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            overflow: auto;
+        }
+
+        .catalog-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 40px 20px;
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--color-gold);
+            color: var(--color-primary);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--color-gold-hover);
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            color: var(--color-gold);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .flipbook-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+        }
+
+        #flipbook {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #flipbook .page {
+            width: 400px;
+            height: 600px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #flipbook .page img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .catalog-thumbnail {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .catalog-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .catalog-thumbnail i {
+            font-size: 5rem;
+            color: var(--color-gold);
+        }
+
+        .catalog-controls {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .catalog-controls button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--color-gold);
+            color: var(--color-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .catalog-controls button:hover {
+            background-color: var(--color-gold-hover);
+            transform: translateY(-2px);
+        }
+
+        .page-number {
+            color: var(--color-text-main);
+            font-size: 1.1rem;
+        }
+
+        .loading-message {
+            color: var(--color-gold);
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .flipbook-container {
+                width: 600px;
+                height: 450px;
+            }
+
+            #flipbook .page {
+                width: 300px;
+                height: 450px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .flipbook-container {
+                width: 400px;
+                height: 300px;
+            }
+
+            #flipbook .page {
+                width: 200px;
+                height: 300px;
+            }
+
+            .catalogs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    \u003cscript src=" ./catalog-zoom.js\\u003e\u003c/script\u003e
+
+
+<body>
+    <a href="/" class="back-link"
+        style="position: fixed; top: 20px; left: 20px; color: var(--color-gold); text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; z-index: 1000;">
+        ← Ana Sayfaya Dön
+    </a>
+
+    <div class="catalog-page">
+        <div class="catalog-header">
+            <h1>Ürün Kataloglarımız</h1>
+            <p>Katalogları görüntülemek için tıklayın</p>
+        </div>
+
+        <div class="catalogs-grid" id="catalogs-grid">
+            <div class="loading-message">Kataloglar yükleniyor...</div>
+        </div>
+    </div>
+
+    <!-- Flipbook Modal -->
+    <div class="catalog-modal" id="catalog-modal">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <h2 class="modal-title" id="modal-title">Katalog</h2>
+        <div class="flipbook-container">
+            <div id="flipbook">
+                <div class="page">
+                    <p class="loading-message">Yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+        <div class="catalog-controls">
+            <button id="prev-btn">← Önceki</button>
+            <span class="page-number">Sayfa <span id="current-page">1</span> / <span id="total-pages">1</span></span>
+            <button id="next-btn">Sonraki →</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './src/supabase.js';
+
+        let catalogs = [];
+        let currentCatalog = null;
+
+        // Render all pages of a PDF
+        async function renderAllPDFPages(pdfUrl, totalPages) {
+            const pages = [];
+            try {
+                const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 1.5 });
+
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    pages.push(canvas.toDataURL('image/jpeg', 0.9));
+                }
+            } catch (error) {
+                console.error('PDF render error:', error);
+            }
+            return pages;
+        }
+
+        window.openCatalog = async function (catalogId) {
+            currentCatalog = catalogs.find(c => c.id === catalogId);
+            if (!currentCatalog) return;
+
+            const modal = document.getElementById('catalog-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const flipbook = document.getElementById('flipbook');
+
+            modal.classList.add('active');
+            modalTitle.textContent = currentCatalog.name;
+
+            // Destroy existing Turn.js instance if any
+            try {
+                if (typeof $.fn.turn !== 'undefined') {
+                    const $flipbook = $('#flipbook');
+                    if ($flipbook.data('turn')) {
+                        $flipbook.turn('destroy');
+                    }
+                }
+            } catch (e) {
+                console.log('No existing Turn.js instance to destroy');
+            }
+
+            flipbook.innerHTML = '<div class="page"><p class="loading-message">Katalog yükleniyor...</p></div>';
+
+            // Render all PDF pages
+            const pages = await renderAllPDFPages(currentCatalog.pdf_url, currentCatalog.total_pages);
+
+            // Clear and rebuild flipbook
+            flipbook.innerHTML = '';
+            pages.forEach((pageImage, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page';
+                pageDiv.innerHTML = `<img src="${pageImage}" alt="Sayfa ${index + 1}">`;
+                flipbook.appendChild(pageDiv);
+            });
+
+            // Wait for DOM update, then initialize Turn.js
+            setTimeout(() => {
+                try {
+                    $('#flipbook').turn({
+                        width: 800,
+                        height: 600,
+                        autoCenter: true,
+                        elevation: 50,
+                        gradients: true,
+                        duration: 1000,
+                        acceleration: true,
+                        display: 'double'
+                    });
+
+                    // Update page counter
+                    document.getElementById('total-pages').textContent = pages.length;
+                    document.getElementById('current-page').textContent = '1';
+
+                    $('#flipbook').bind('turned', function (event, page) {
+                        document.getElementById('current-page').textContent = page;
+                    });
+
+                    // Control buttons
+                    document.getElementById('prev-btn').onclick = () => $('#flipbook').turn('previous');
+                    document.getElementById('next-btn').onclick = () => $('#flipbook').turn('next');
+                } catch (error) {
+                    console.error('Turn.js initialization error:', error);
+                    alert('Flipbook yüklenirken hata oluştu. Lütfen sayfayı yenileyin.');
+                }
+            }, 100);
+        }
+
+        window.closeModal = function () {
+            const modal = document.getElementById('catalog-modal');
+            modal.classList.remove('active');
+
+            // Destroy Turn.js instance
+            try {
+                const $flipbook = $('#flipbook');
+                if ($flipbook.data('turn')) {
+                    $flipbook.turn('destroy');
+                }
+                // Clear flipbook content
+                document.getElementById('flipbook').innerHTML = '';
+            } catch (e) {
+                console.log('Cleanup error:', e);
+            }
+        }
+
+        async function loadCatalogs() {
+            const grid = document.getElementById('catalogs-grid');
+
+            const { data, error } = await supabase
+                .from('catalogs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = '<div class="loading-message">Henüz katalog yüklenmedi.</div>';
+                return;
+            }
+
+            catalogs = data;
+            grid.innerHTML = '';
+
+            catalogs.forEach(catalog => {
+                const card = document.createElement('div');
+                card.className = 'catalog-card';
+                card.onclick = () => openCatalog(catalog.id);
+
+                // Use stored thumbnail or fallback to PDF icon
+                const thumbnailHtml = catalog.thumbnail_url
+                    ? `<img src="${catalog.thumbnail_url}" alt="${catalog.name}">`
+                    : '<i class="fa-solid fa-file-pdf"></i>';
+
+                card.innerHTML = `
+                    <div class="catalog-thumbnail">
+                        ${thumbnailHtml}
+                    </div>
+                    <div class="catalog-info">
+                        <h3>${catalog.name}</h3>
+                        <p><i class="fa-solid fa-book"></i> ${catalog.total_pages} sayfa</p>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        loadCatalogs();
+    </script>
+    <script src="./catalog-zoom.js"></script>
+</body>
+
+</head>
+
+</html>
