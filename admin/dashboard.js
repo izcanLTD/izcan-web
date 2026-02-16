@@ -313,7 +313,24 @@ if (addGalleryForm) {
         } catch (err) { alert('Hata: ' + err.message); }
         finally { submitBtn.disabled = false; submitBtn.textContent = 'Kaydet'; }
     });
+    // Load WhatsApp number
+    const { data: whatsappData } = await supabase
+        .from('site_content')
+        .select('value')
+        .eq('key', 'whatsapp_number')
+        .single();
+    if (whatsappData) {
+        document.getElementById('whatsapp-number').value = whatsappData.value || '';
+    }
+    const whatsappNumber = document.getElementById('whatsapp-number').value.trim();
+    // Save WhatsApp number
+    if (whatsappNumber) {
+        await supabase
+            .from('site_content')
+            .upsert({ key: 'whatsapp_number', value: whatsappNumber });
+    }
 }
+
 
 /* ---------------- GLOBAL EVENTS ---------------- */
 document.addEventListener('click', async (e) => {
@@ -569,6 +586,9 @@ loadProducts();
 loadSlider();
 loadGallery();
 loadCatalog();
+loadSiteContent();
+saveSiteContent();
+
 
 
 /* ---------------- MESSAGES LOGIC ---------------- */

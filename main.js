@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadGallery();
     await loadSocialLinks();
     await loadMapLocation();
-
+    await loadWhatsAppNumber();
     setupIntersectionObserver();
 });
 
@@ -147,7 +147,7 @@ async function loadProducts() {
                     <div class="card-content">
                         <h3>${prod.title}</h3>
                         <p>${prod.category}</p>
-                        <a href="#" class="link-arrow">İncele →</a>
+                        <a href="#" class="link-arrow" onclick="openProductDetail('${prod.id}', '${prod.title}', '${prod.category}', '${prod.description || ''}', '${prod.image_url}'); return false;">İncele →</a>
                     </div>
                 </div>`;
         });
@@ -301,4 +301,31 @@ if (contactForm) {
             submitBtn.textContent = originalText;
         }
     });
+    /* --- PRODUCT DETAIL MODAL --- */
+    window.openProductDetail = function (id, title, category, description, imageUrl) {
+        const details = `
+                Ürün: ${title}
+                Kategori: ${category}
+                ${description ? 'Açıklama: ' + description : ''}
+                Daha fazla bilgi için bizimle iletişime geçin.
+                    `.trim();
+
+        alert(details);
+    };
+    /* --- WHATSAPP INTEGRATION --- */
+    async function loadWhatsAppNumber() {
+        const { data } = await supabase
+            .from('site_content')
+            .select('value')
+            .eq('key', 'whatsapp_number')
+            .single();
+
+        if (data && data.value) {
+            const whatsappLink = document.getElementById('social-whatsapp');
+            if (whatsappLink) {
+                const number = data.value.replace(/[^0-9]/g, '');
+                whatsappLink.href = `https://wa.me/${number}`;
+            }
+        }
+    }
 }

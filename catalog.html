@@ -260,7 +260,8 @@
             }
         }
     </style>
-</head>
+    \u003cscript src=" /catalog-zoom.js\\u003e\u003c/script\u003e
+
 
 <body>
     <a href="/" class="back-link"
@@ -294,6 +295,18 @@
             <button id="prev-btn">← Önceki</button>
             <span class="page-number">Sayfa <span id="current-page">1</span> / <span id="total-pages">1</span></span>
             <button id="next-btn">Sonraki →</button>
+        </div>
+        <div class="zoom-controls">
+            <button id="zoom-out-btn" class="control-btn" title="Uzaklaştır">
+                <i class="fas fa-search-minus"></i>
+            </button>
+            <span id="zoom-level">100%</span>
+            <button id="zoom-in-btn" class="control-btn" title="Yakınlaştır">
+                <i class="fas fa-search-plus"></i>
+            </button>
+            <button id="zoom-reset-btn" class="control-btn" title="Sıfırla">
+                <i class="fas fa-undo"></i>
+            </button>
         </div>
     </div>
 
@@ -461,5 +474,7 @@
         loadCatalogs();
     </script>
 </body>
+<script src="/catalog-zoom.js"></script>
+</head>
 
 </html>
