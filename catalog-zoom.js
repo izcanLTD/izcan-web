@@ -1,150 +1,80 @@
-// Catalog Zoom Functionality
+// Simplified Catalog Zoom - Click to Zoom with Magnifier Cursor
 let currentZoom = 1;
-const ZOOM_STEP = 0.25;
-const MIN_ZOOM = 1;
-const MAX_ZOOM = 3;
+let isZoomed = false;
 
-let isPanning = false;
-let startX = 0;
-let startY = 0;
-let translateX = 0;
-let translateY = 0;
-
-function initializeZoomControls() {
+function initializeCatalogZoom() {
     const flipbook = document.getElementById('flipbook');
     const flipbookContainer = document.querySelector('.flipbook-container');
-    const zoomInBtn = document.getElementById('zoom-in-btn');
-    const zoomOutBtn = document.getElementById('zoom-out-btn');
-    const zoomResetBtn = document.getElementById('zoom-reset-btn');
-    const zoomLevel = document.getElementById('zoom-level');
 
-    if (!flipbook || !zoomInBtn) {
-        console.log('Zoom controls not found, will retry...');
+    if (!flipbook || !flipbookContainer) {
+        console.log('Flipbook not found, will retry...');
         return;
     }
 
-    // Zoom In
-    zoomInBtn.addEventListener('click', () => {
-        if (currentZoom < MAX_ZOOM) {
-            currentZoom = Math.min(currentZoom + ZOOM_STEP, MAX_ZOOM);
-            applyZoom();
-        }
-    });
+    // Add magnifier cursor on hover
+    flipbookContainer.style.cursor = 'zoom-in';
 
-    // Zoom Out
-    zoomOutBtn.addEventListener('click', () => {
-        if (currentZoom > MIN_ZOOM) {
-            currentZoom = Math.max(currentZoom - ZOOM_STEP, MIN_ZOOM);
-            applyZoom();
-        }
-    });
+    // Click to toggle zoom
+    flipbookContainer.addEventListener('click', (e) => {
+        // Don't zoom if clicking on turn.js navigation areas
+        if (e.target.closest('.turn-page')) {
+            const rect = flipbookContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
 
-    // Reset Zoom
-    zoomResetBtn.addEventListener('click', () => {
-        currentZoom = 1;
-        translateX = 0;
-        translateY = 0;
-        applyZoom();
-    });
-
-    // Mouse wheel zoom
-    flipbookContainer.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        if (e.deltaY < 0) {
-            // Zoom in
-            if (currentZoom < MAX_ZOOM) {
-                currentZoom = Math.min(currentZoom + ZOOM_STEP, MAX_ZOOM);
-                applyZoom();
+            // Allow page turning on edges
+            if (clickX < 50 || clickX > rect.width - 50) {
+                return;
             }
+        }
+
+        if (!isZoomed) {
+            // Zoom in to 2x
+            currentZoom = 2;
+            flipbook.style.transform = `scale(${currentZoom})`;
+            flipbook.style.transformOrigin = 'center center';
+            flipbook.style.transition = 'transform 0.3s ease';
+            flipbookContainer.style.cursor = 'zoom-out';
+            flipbookContainer.style.overflow = 'auto';
+            isZoomed = true;
         } else {
             // Zoom out
-            if (currentZoom > MIN_ZOOM) {
-                currentZoom = Math.max(currentZoom - ZOOM_STEP, MIN_ZOOM);
-                applyZoom();
-            }
-        }
-    });
-
-    // Pan functionality when zoomed
-    flipbookContainer.addEventListener('mousedown', (e) => {
-        if (currentZoom > 1) {
-            isPanning = true;
-            startX = e.clientX - translateX;
-            startY = e.clientY - translateY;
-            flipbookContainer.classList.add('grabbing');
-        }
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isPanning) {
-            translateX = e.clientX - startX;
-            translateY = e.clientY - startY;
-            applyZoom();
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        if (isPanning) {
-            isPanning = false;
-            flipbookContainer.classList.remove('grabbing');
-        }
-    });
-
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        const modal = document.getElementById('catalog-modal');
-        if (!modal || !modal.classList.contains('active')) return;
-
-        if (e.key === '+' || e.key === '=') {
-            e.preventDefault();
-            if (currentZoom < MAX_ZOOM) {
-                currentZoom = Math.min(currentZoom + ZOOM_STEP, MAX_ZOOM);
-                applyZoom();
-            }
-        } else if (e.key === '-' || e.key === '_') {
-            e.preventDefault();
-            if (currentZoom > MIN_ZOOM) {
-                currentZoom = Math.max(currentZoom - ZOOM_STEP, MIN_ZOOM);
-                applyZoom();
-            }
-        } else if (e.key === '0') {
-            e.preventDefault();
             currentZoom = 1;
-            translateX = 0;
-            translateY = 0;
-            applyZoom();
+            flipbook.style.transform = 'scale(1)';
+            flipbookContainer.style.cursor = 'zoom-in';
+            flipbookContainer.style.overflow = 'hidden';
+            isZoomed = false;
         }
     });
 
-    function applyZoom() {
-        flipbook.style.transform = `scale(${currentZoom}) translate(${translateX / currentZoom}px, ${translateY / currentZoom}px)`;
-        zoomLevel.textContent = `${Math.round(currentZoom * 100)}%`;
-
-        // Update button states
-        zoomInBtn.disabled = currentZoom >= MAX_ZOOM;
-        zoomOutBtn.disabled = currentZoom <= MIN_ZOOM;
-
-        // Update container class
-        if (currentZoom > 1) {
-            flipbookContainer.classList.add('zoomed');
-        } else {
-            flipbookContainer.classList.remove('zoomed');
-            translateX = 0;
-            translateY = 0;
-        }
+    // Reset zoom when modal closes
+    const modal = document.getElementById('catalog-modal');
+    if (modal) {
+        const observer = new MutationObserver(() => {
+            if (!modal.classList.contains('active')) {
+                currentZoom = 1;
+                isZoomed = false;
+                if (flipbook) {
+                    flipbook.style.transform = 'scale(1)';
+                }
+                if (flipbookContainer) {
+                    flipbookContainer.style.cursor = 'zoom-in';
+                    flipbookContainer.style.overflow = 'hidden';
+                }
+            }
+        });
+        observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
     }
 }
 
 // Initialize when modal opens
 window.addEventListener('DOMContentLoaded', () => {
-    // Try to initialize immediately
-    initializeZoomControls();
+    initializeCatalogZoom();
 
-    // Also initialize when catalog modal becomes active
     const observer = new MutationObserver(() => {
         const modal = document.getElementById('catalog-modal');
         if (modal && modal.classList.contains('active')) {
-            setTimeout(initializeZoomControls, 200);
+            setTimeout(initializeCatalogZoom, 300);
         }
     });
 

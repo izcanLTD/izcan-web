@@ -1,0 +1,88 @@
+/* WhatsApp Floating Chat Widget */
+let whatsappNumber = '';
+
+async function initWhatsAppWidget() {
+    // Load WhatsApp number from database
+    const { data } = await supabase
+        .from('site_content')
+        .select('value')
+        .eq('key', 'whatsapp_number')
+        .single();
+
+    if (data && data.value) {
+        whatsappNumber = data.value.replace(/[^0-9]/g, '');
+    }
+
+    // Create widget HTML
+    const widget = document.createElement('div');
+    widget.className = 'whatsapp-float';
+    widget.innerHTML = `
+        <div class="whatsapp-button" id="whatsapp-toggle">
+            <i class="fab fa-whatsapp"></i>
+        </div>
+        <div class="whatsapp-chat-box" id="whatsapp-chat">
+            <div class="whatsapp-chat-header">
+                <img src="/logo.png" alt="İzcan">
+                <div class="whatsapp-chat-header-info">
+                    <h4>İzcan Orman Ürünleri</h4>
+                    <p>Genellikle birkaç dakika içinde yanıt verir</p>
+                </div>
+                <button class="whatsapp-close" id="whatsapp-close">&times;</button>
+            </div>
+            <div class="whatsapp-chat-body">
+                <div class="whatsapp-message">
+                    Merhaba! 👋<br>
+                    Size nasıl yardımcı olabiliriz?
+                </div>
+            </div>
+            <div class="whatsapp-chat-footer">
+                <input type="text" id="whatsapp-input" placeholder="Mesajınızı yazın..." />
+                <button id="whatsapp-send">Gönder</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(widget);
+
+    // Toggle chat box
+    document.getElementById('whatsapp-toggle').addEventListener('click', () => {
+        const chatBox = document.getElementById('whatsapp-chat');
+        chatBox.classList.toggle('active');
+    });
+
+    // Close button
+    document.getElementById('whatsapp-close').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('whatsapp-chat').classList.remove('active');
+    });
+
+    // Send message
+    const sendMessage = () => {
+        const input = document.getElementById('whatsapp-input');
+        const message = input.value.trim();
+
+        if (message && whatsappNumber) {
+            const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+            input.value = '';
+            document.getElementById('whatsapp-chat').classList.remove('active');
+        } else if (!whatsappNumber) {
+            alert('WhatsApp numarası ayarlanmamış. Lütfen admin panelden ayarlayın.');
+        }
+    };
+
+    document.getElementById('whatsapp-send').addEventListener('click', sendMessage);
+
+    document.getElementById('whatsapp-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+}
+
+// Initialize on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWhatsAppWidget);
+} else {
+    initWhatsAppWidget();
+}

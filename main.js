@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadGallery();
     await loadSocialLinks();
     await loadMapLocation();
-    await loadWhatsAppNumber();
     setupIntersectionObserver();
 });
 
@@ -301,31 +300,4 @@ if (contactForm) {
             submitBtn.textContent = originalText;
         }
     });
-    /* --- PRODUCT DETAIL MODAL --- */
-    window.openProductDetail = function (id, title, category, description, imageUrl) {
-        const details = `
-                Ürün: ${title}
-                Kategori: ${category}
-                ${description ? 'Açıklama: ' + description : ''}
-                Daha fazla bilgi için bizimle iletişime geçin.
-                    `.trim();
-
-        alert(details);
-    };
-    /* --- WHATSAPP INTEGRATION --- */
-    async function loadWhatsAppNumber() {
-        const { data } = await supabase
-            .from('site_content')
-            .select('value')
-            .eq('key', 'whatsapp_number')
-            .single();
-
-        if (data && data.value) {
-            const whatsappLink = document.getElementById('social-whatsapp');
-            if (whatsappLink) {
-                const number = data.value.replace(/[^0-9]/g, '');
-                whatsappLink.href = `https://wa.me/${number}`;
-            }
-        }
-    }
 }
