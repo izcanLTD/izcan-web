@@ -16,17 +16,7 @@ function initializeCatalogZoom() {
 
     // Click to toggle zoom
     flipbookContainer.addEventListener('click', (e) => {
-        // Don't zoom if clicking on turn.js navigation areas
-        if (e.target.closest('.turn-page')) {
-            const rect = flipbookContainer.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-
-            // Allow page turning on edges
-            if (clickX < 50 || clickX > rect.width - 50) {
-                return;
-            }
-        }
+        e.stopPropagation();
 
         if (!isZoomed) {
             // Zoom in to 2x
@@ -37,6 +27,7 @@ function initializeCatalogZoom() {
             flipbookContainer.style.cursor = 'zoom-out';
             flipbookContainer.style.overflow = 'auto';
             isZoomed = true;
+            console.log('Zoomed in to 2x');
         } else {
             // Zoom out
             currentZoom = 1;
@@ -44,6 +35,7 @@ function initializeCatalogZoom() {
             flipbookContainer.style.cursor = 'zoom-in';
             flipbookContainer.style.overflow = 'hidden';
             isZoomed = false;
+            console.log('Zoomed out to 1x');
         }
     });
 

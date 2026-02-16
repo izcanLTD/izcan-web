@@ -1,4 +1,7 @@
-import { supabase } from './src/supabase.js'
+import { supabase } from './src/supabase.js';
+
+// Export supabase to window for non-module scripts
+window.supabase = supabase;
 
 document.addEventListener('DOMContentLoaded', async () => {
     setupMobileMenu();

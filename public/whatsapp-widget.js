@@ -3,7 +3,7 @@ let whatsappNumber = '';
 
 async function initWhatsAppWidget() {
     // Load WhatsApp number from database
-    const { data } = await supabase
+    const { data } = await window.supabase
         .from('site_content')
         .select('value')
         .eq('key', 'whatsapp_number')
