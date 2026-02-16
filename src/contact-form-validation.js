@@ -1,7 +1,7 @@
 // Contact Form Validation and Enhanced Error Handling
 // Import this in index.html after main.js
 
-import { supabase } from './src/supabase.js';
+import { supabase } from './supabase.js';
 
 // Override the contact form handler with validation
 document.addEventListener('DOMContentLoaded', () => {
