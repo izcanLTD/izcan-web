@@ -336,7 +336,7 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        /* PDF Viewer Container */
+        /* PDF Viewer Container - Updated for Zoom */
         .pdf-viewer-container {
             width: 100%;
             height: 100%;
@@ -345,6 +345,12 @@
             justify-content: center;
             padding: 60px 20px 80px;
             box-sizing: border-box;
+            position: relative;
+            /* Context for overlay */
+            overflow: hidden;
+            /* Hide zoomed canvas overflow */
+            cursor: zoom-in;
+            /* Default cursor */
         }
 
         #pdf-canvas {
@@ -352,6 +358,38 @@
             max-height: 100%;
             object-fit: contain;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            /* Transform origin for zooming logic */
+            transform-origin: center center;
+            will-change: transform;
+        }
+
+        /* Zoom Icon Overlay */
+        .zoom-icon-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            pointer-events: none;
+            /* Let clicks pass through to container */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        /* Show icon on hover only on desktop (when body has no touch class, or simplistic approach) */
+        @media (hover: hover) {
+            .pdf-viewer-container:hover .zoom-icon-overlay {
+                opacity: 1;
+            }
         }
 
         /* Navigation Controls */
@@ -486,6 +524,9 @@
             <canvas id="pdf-canvas"></canvas>
             <div id="loading-msg" class="loading-spinner" style="display: none;">
                 <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div id="zoom-icon-overlay" class="zoom-icon-overlay">
+                <i class="fas fa-search-plus"></i>
             </div>
         </div>
 

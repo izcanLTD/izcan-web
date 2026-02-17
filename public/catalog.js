@@ -55,14 +55,23 @@ let pdfDoc = null;
 let pageNum = 1;
 let pageRendering = false;
 let pageNumPending = null;
-let scale = 1.5; // Initial scale, will be adjusted responsively
+let baseScale = 1.5; // Initial render scale
 const canvas = document.getElementById('pdf-canvas');
 const ctx = canvas ? canvas.getContext('2d') : null;
+
+// Zoom & Pan State
+let isZoomed = false;
+let zoomScale = 1; // 1 = normal, 2.5 = zoomed
+let panX = 0;
+let panY = 0;
+let isDragging = false;
+let startX, startY;
 
 async function openCatalogViewer(url, title) {
     const modal = document.getElementById('catalog-modal');
     const modalTitle = document.getElementById('modal-title');
     const loadingMsg = document.getElementById('loading-msg');
+    const iconOverlay = document.getElementById('zoom-icon-overlay');
 
     if (!modal || !canvas) return;
 
@@ -72,12 +81,14 @@ async function openCatalogViewer(url, title) {
     // Reset state
     pdfDoc = null;
     pageNum = 1;
+    resetZoom();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     loadingMsg.style.display = 'block';
     canvas.style.display = 'none';
+    if (iconOverlay) iconOverlay.style.display = 'none';
 
     // Ensure responsive scale based on screen width
-    updateScale();
+    updateBaseScale();
 
     try {
         const loadingTask = pdfjsLib.getDocument(url);
@@ -86,6 +97,7 @@ async function openCatalogViewer(url, title) {
         document.getElementById('page-indicator').textContent = `Sayfa ${pageNum} / ${pdfDoc.numPages}`;
         loadingMsg.style.display = 'none';
         canvas.style.display = 'block';
+        if (iconOverlay) iconOverlay.style.display = 'flex';
 
         renderPage(pageNum);
         updateButtons();
@@ -95,13 +107,13 @@ async function openCatalogViewer(url, title) {
     }
 }
 
-function updateScale() {
+function updateBaseScale() {
     if (window.innerWidth < 768) {
-        scale = 0.6; // Smaller scale for mobile
+        baseScale = 0.6; // Smaller scale for mobile
     } else if (window.innerWidth < 1200) {
-        scale = 1.0; // Medium scale for tablets/laptops
+        baseScale = 1.0; // Medium scale for tablets/laptops
     } else {
-        scale = 1.5; // Full scale for desktops
+        baseScale = 1.5; // Full scale for desktops
     }
 }
 
@@ -147,6 +159,9 @@ function renderPage(num) {
 
     // Update page counters
     document.getElementById('page-indicator').textContent = `Sayfa ${num} / ${pdfDoc.numPages}`;
+
+    // Reset zoom on page turn
+    resetZoom();
 }
 
 function queueRenderPage(num) {
@@ -179,9 +194,125 @@ function updateButtons() {
     nextBtn.disabled = pageNum >= pdfDoc.numPages;
 }
 
+// --- Zoom & Pan Logic ---
+
+function resetZoom() {
+    isZoomed = false;
+    zoomScale = 1;
+    panX = 0;
+    panY = 0;
+    updateTransform();
+
+    const container = document.querySelector('.pdf-viewer-container');
+    container.style.cursor = 'zoom-in';
+
+    const iconOverlay = document.getElementById('zoom-icon-overlay');
+    if (iconOverlay) {
+        iconOverlay.innerHTML = '<i class="fas fa-search-plus"></i>';
+        iconOverlay.style.opacity = '0'; // Hide by default, show on hover via CSS
+    }
+}
+
+function toggleZoom(e) {
+    // Determine click position relative to the canvas to zoom towards that point
+    // For simplicity in this iteration, we just toggle zoom to center or last position
+    // (Advanced point-zoom requires more math specific to the transform origin)
+
+    if (isZoomed) {
+        // Zoom out
+        resetZoom();
+    } else {
+        // Zoom in
+        isZoomed = true;
+        zoomScale = 2.5;
+        updateTransform();
+
+        const container = document.querySelector('.pdf-viewer-container');
+        container.style.cursor = 'grab';
+
+        const iconOverlay = document.getElementById('zoom-icon-overlay');
+        if (iconOverlay) {
+            iconOverlay.style.opacity = '0'; // Hide icon when zoomed
+        }
+    }
+}
+
+function updateTransform() {
+    // Apply transform to the canvas
+    canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
+    canvas.style.transition = isDragging ? 'none' : 'transform 0.3s ease'; // Disable transition during drag for performance
+}
+
+// Pan Logic (Desktop & Mobile)
+function initZoomPanControls() {
+    const container = document.querySelector('.pdf-viewer-container');
+
+    if (!container) return; // Should not happen if loaded correctly
+
+    // Click to toggle zoom
+    container.addEventListener('click', (e) => {
+        // Avoid triggering if dragging happened
+        if (Math.abs(panX) > 5 || Math.abs(panY) > 5) return;
+        if (!isDragging) {
+            toggleZoom(e);
+        }
+    });
+
+    // Mouse Down
+    container.addEventListener('mousedown', (e) => {
+        if (!isZoomed) return;
+        isDragging = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        container.style.cursor = 'grabbing';
+    });
+
+    // Mouse Move
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging || !isZoomed) return;
+        e.preventDefault();
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        updateTransform();
+    });
+
+    // Mouse Up
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            if (isZoomed) container.style.cursor = 'grab';
+        }
+    });
+
+    // Touch Events for Mobile
+    container.addEventListener('touchstart', (e) => {
+        if (!isZoomed) return;
+        if (e.touches.length === 1) { // Single finger drag
+            isDragging = true;
+            startX = e.touches[0].clientX - panX;
+            startY = e.touches[0].clientY - panY;
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!isDragging || !isZoomed) return;
+        e.preventDefault(); // Prevent page scroll
+        if (e.touches.length === 1) {
+            panX = e.touches[0].clientX - startX;
+            panY = e.touches[0].clientY - startY;
+            updateTransform();
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+}
+
+
 // Event Listeners
-document.getElementById('prev-page')?.addEventListener('click', onPrevPage);
-document.getElementById('next-page')?.addEventListener('click', onNextPage);
+document.getElementById('prev-page')?.addEventListener('click', (e) => { e.stopPropagation(); onPrevPage(); });
+document.getElementById('next-page')?.addEventListener('click', (e) => { e.stopPropagation(); onNextPage(); });
 
 document.getElementById('modal-close')?.addEventListener('click', () => {
     document.getElementById('catalog-modal').classList.remove('active');
@@ -191,7 +322,7 @@ document.getElementById('modal-close')?.addEventListener('click', () => {
 // Handle Window Resize
 window.addEventListener('resize', () => {
     if (pdfDoc) {
-        updateScale();
+        updateBaseScale();
         renderPage(pageNum);
     }
 });
@@ -207,7 +338,11 @@ document.addEventListener('keydown', (e) => {
 
 // Initialize
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadCatalogs);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCatalogs();
+        initZoomPanControls();
+    });
 } else {
     loadCatalogs();
+    initZoomPanControls();
 }
