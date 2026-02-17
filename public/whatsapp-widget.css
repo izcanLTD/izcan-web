@@ -91,6 +91,18 @@
     font-weight: 500;
 }
 
+/* Extra specificity to ensure text is visible */
+.whatsapp-chat-box .whatsapp-message,
+.whatsapp-chat-body .whatsapp-message,
+div.whatsapp-message {
+    color: #000 !important;
+    font-weight: 500 !important;
+}
+
+.whatsapp-message * {
+    color: #000 !important;
+}
+
 .whatsapp-chat-footer {
     padding: 15px;
     background: #F0F0F0;
