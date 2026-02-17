@@ -153,12 +153,17 @@ div.whatsapp-message {
 @media (max-width: 768px) {
     .whatsapp-chat-box {
         width: 90vw;
+        max-width: 350px;
         right: 5vw;
-        left: 5vw;
+        bottom: 80px;
     }
 
     .whatsapp-float {
         bottom: 15px;
         right: 15px;
+    }
+
+    .whatsapp-chat-body {
+        max-height: 200px;
     }
 }
