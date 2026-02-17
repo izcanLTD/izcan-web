@@ -141,21 +141,41 @@
 
 @media (max-width: 768px) {
     .whatsapp-chat-box {
-        width: 90%;
-        max-width: 350px;
-        right: auto;
-        left: 50%;
-        bottom: auto;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        transform: none !important;
+        border-radius: 20px 20px 0 0 !important;
+        box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.2) !important;
+        display: none;
+        /* Keep display logic */
+        flex-direction: column;
+        z-index: 99999 !important;
+    }
+
+    .whatsapp-chat-box.active {
+        display: flex !important;
     }
 
     .whatsapp-float {
         bottom: 20px;
         right: 20px;
+        z-index: 99998;
     }
 
     .whatsapp-chat-body {
-        max-height: 200px;
+        max-height: 40vh !important;
+        /* Use viewport height unit */
+        min-height: 200px;
+    }
+
+    .whatsapp-input-area {
+        padding-bottom: 20px;
+        /* Add padding for safe area on iPhone */
     }
 }
