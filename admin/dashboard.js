@@ -314,25 +314,7 @@ if (addGalleryForm) {
         finally { submitBtn.disabled = false; submitBtn.textContent = 'Kaydet'; }
     });
 
-    // Load WhatsApp number
-    const { data: whatsappData } = await supabase
-        .from('site_content')
-        .select('value')
-        .eq('key', 'whatsapp_number')
-        .maybeSingle();
-    if (whatsappData) {
-        document.getElementById('whatsapp-number').value = whatsappData.value || '';
-    }
-
-    // Load WhatsApp greeting
-    const { data: greetingData } = await supabase
-        .from('site_content')
-        .select('value')
-        .eq('key', 'whatsapp_greeting')
-        .maybeSingle();
-    if (greetingData) {
-        document.getElementById('whatsapp-greeting').value = greetingData.value || 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?';
-    }
+    // WhatsApp logic moved to loadSiteContent via Init
 }
 
 // Save Settings Button Handler
@@ -625,12 +607,39 @@ if (contentForm) {
 }
 
 // Init
+// Init
 loadProducts();
 loadSlider();
 loadGallery();
 loadCatalog();
 loadSiteContent();
-saveSiteContent();
+
+/* --- SITE CONTENT LOGIC --- */
+async function loadSiteContent() {
+    // Load WhatsApp number
+    const { data: whatsappData } = await supabase
+        .from('site_content')
+        .select('value')
+        .eq('key', 'whatsapp_number')
+        .maybeSingle();
+
+    const whatsappNumInput = document.getElementById('whatsapp-number');
+    if (whatsappData && whatsappNumInput) {
+        whatsappNumInput.value = whatsappData.value || '';
+    }
+
+    // Load WhatsApp greeting
+    const { data: greetingData } = await supabase
+        .from('site_content')
+        .select('value')
+        .eq('key', 'whatsapp_greeting')
+        .maybeSingle();
+
+    const whatsappGreetingInput = document.getElementById('whatsapp-greeting');
+    if (greetingData && whatsappGreetingInput) {
+        whatsappGreetingInput.value = greetingData.value || 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?';
+    }
+}
 
 
 
