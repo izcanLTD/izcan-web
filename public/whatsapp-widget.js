@@ -52,7 +52,7 @@ async function initWhatsAppWidget() {
                 <button class="whatsapp-close" id="whatsapp-close">&times;</button>
             </div>
             <div class="whatsapp-chat-body">
-                <div class="whatsapp-message">
+                <div class="whatsapp-message" style="color: #000 !important; font-weight: 600 !important; background: white !important;">
                     ${greetingMessage}
                 </div>
             </div>
