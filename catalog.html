@@ -49,13 +49,15 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
+            font-family: -apple-system, system-ui, sans-serif;
         }
 
         .whatsapp-chat-box.active {
             display: flex;
         }
 
-        .whatsapp-header {
+        /* Corrected class name to match JS (whatsapp-chat-header) */
+        .whatsapp-chat-header {
             background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
             color: white;
             padding: 15px;
@@ -65,25 +67,39 @@
             position: relative;
         }
 
-        .whatsapp-header img {
-            width: 40px;
-            height: 40px;
+        /* Constrain logo size */
+        .whatsapp-chat-header img {
+            width: 40px !important;
+            height: 40px !important;
+            max-width: 40px !important;
             border-radius: 50%;
             object-fit: cover;
             background: white;
             padding: 2px;
+            flex-shrink: 0;
         }
 
-        .whatsapp-header-info h4 {
+        /* Corrected class name to match JS (whatsapp-chat-header-info) */
+        .whatsapp-chat-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .whatsapp-chat-header-info h4 {
             margin: 0;
             font-size: 16px;
             font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: white !important;
         }
 
-        .whatsapp-header-info p {
+        .whatsapp-chat-header-info p {
             margin: 0;
             font-size: 12px;
             opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9) !important;
         }
 
         .whatsapp-chat-body {
@@ -101,9 +117,11 @@
             margin-bottom: 10px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             color: #000;
-            font-weight: 600;
+            font-weight: 500;
             font-size: 14px;
             line-height: 1.4;
+            align-self: flex-start;
+            max-width: 85%;
         }
 
         .whatsapp-chat-footer {
@@ -112,6 +130,7 @@
             display: flex;
             gap: 10px;
             border-top: 1px solid #eee;
+            align-items: center;
         }
 
         .whatsapp-chat-footer input {
@@ -121,17 +140,20 @@
             border-radius: 20px;
             outline: none;
             color: #333;
+            font-size: 14px;
         }
 
         .whatsapp-chat-footer button {
             background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
             color: white;
             border: none;
-            padding: 0 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 14px;
             transition: all 0.3s;
+            white-space: nowrap;
         }
 
         .whatsapp-close {
@@ -140,11 +162,13 @@
             right: 15px;
             background: none;
             border: none;
-            color: white;
+            color: white !important;
             font-size: 24px;
             cursor: pointer;
             padding: 0;
             line-height: 1;
+            width: auto;
+            height: auto;
         }
 
         @media (max-width: 768px) {
@@ -155,10 +179,11 @@
                 right: 0 !important;
                 top: auto !important;
                 width: 100% !important;
-                max-width: none !important;
+                max-width: 100% !important;
                 margin: 0 !important;
                 transform: none !important;
                 border-radius: 20px 20px 0 0 !important;
+                box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.2) !important;
                 z-index: 99999 !important;
             }
 
@@ -505,8 +530,8 @@
             <div class="footer-col">
                 <h4>Sosyal Medya</h4>
                 <div class="social-icons">
-                    <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook"></i></a>
                 </div>
             </div>
         </div>

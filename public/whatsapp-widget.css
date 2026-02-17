@@ -38,13 +38,15 @@
     display: none;
     flex-direction: column;
     overflow: hidden;
+    font-family: -apple-system, system-ui, sans-serif;
 }
 
 .whatsapp-chat-box.active {
     display: flex;
 }
 
-.whatsapp-header {
+/* Corrected class name to match JS (whatsapp-chat-header) */
+.whatsapp-chat-header {
     background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     color: white;
     padding: 15px;
@@ -54,19 +56,40 @@
     position: relative;
 }
 
-.whatsapp-header i {
-    font-size: 24px;
+/* Constrain logo size */
+.whatsapp-chat-header img {
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    background: white;
+    padding: 2px;
+    flex-shrink: 0;
 }
 
-.whatsapp-header-text h4 {
+/* Corrected class name to match JS (whatsapp-chat-header-info) */
+.whatsapp-chat-header-info {
+    flex: 1;
+    min-width: 0;
+    /* Prevent flexitem overflow */
+}
+
+.whatsapp-chat-header-info h4 {
     margin: 0;
     font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: white !important;
 }
 
-.whatsapp-header-text p {
+.whatsapp-chat-header-info p {
     margin: 0;
     font-size: 12px;
     opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .whatsapp-chat-body {
@@ -84,59 +107,62 @@
     margin-bottom: 10px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     color: #000;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    align-self: flex-start;
+    max-width: 85%;
 }
 
-.whatsapp-input-area {
+.whatsapp-chat-footer {
     padding: 10px;
     background: white;
     display: flex;
     gap: 10px;
+    border-top: 1px solid #eee;
+    align-items: center;
 }
 
-.whatsapp-input-area input {
+.whatsapp-chat-footer input {
     flex: 1;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 20px;
     outline: none;
     color: #333;
+    font-size: 14px;
 }
 
-.whatsapp-input-area input::placeholder {
-    color: #666;
-}
-
-.whatsapp-input-area button {
+.whatsapp-chat-footer button {
     background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
+    font-size: 14px;
     transition: all 0.3s;
+    white-space: nowrap;
 }
 
-.whatsapp-input-area button:hover {
+.whatsapp-chat-footer button:hover {
     transform: scale(1.05);
 }
 
 .whatsapp-close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 255, 255, 0.2);
+    top: 15px;
+    right: 15px;
+    background: none;
     border: none;
-    color: white;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+    color: white !important;
+    font-size: 24px;
     cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    width: auto;
+    height: auto;
 }
 
 @media (max-width: 768px) {
@@ -147,35 +173,21 @@
         right: 0 !important;
         top: auto !important;
         width: 100% !important;
-        max-width: none !important;
+        max-width: 100% !important;
         margin: 0 !important;
         transform: none !important;
         border-radius: 20px 20px 0 0 !important;
         box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.2) !important;
-        display: none;
-        /* Keep display logic */
-        flex-direction: column;
         z-index: 99999 !important;
     }
 
-    .whatsapp-chat-box.active {
-        display: flex !important;
+    .whatsapp-chat-body {
+        max-height: 50vh !important;
+        min-height: 200px;
     }
 
     .whatsapp-float {
         bottom: 20px;
         right: 20px;
-        z-index: 99998;
-    }
-
-    .whatsapp-chat-body {
-        max-height: 40vh !important;
-        /* Use viewport height unit */
-        min-height: 200px;
-    }
-
-    .whatsapp-input-area {
-        padding-bottom: 20px;
-        /* Add padding for safe area on iPhone */
     }
 }
