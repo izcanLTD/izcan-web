@@ -5,10 +5,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog - İzcan Orman Ürünleri</title>
-    <link rel="preload" href="./style.css?v=6" as="style">
-    <link rel="stylesheet" href="./style.css?v=6">
+    <link rel="preload" href="/style.css?v=7" as="style">
+    <link rel="stylesheet" href="/style.css?v=7">
     <style>
-        /* Critical CSS */
+        /* WhatsApp Widget CSS - Inlined for reliability */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+        }
+
+        .whatsapp-float i {
+            color: white;
+            font-size: 30px;
+        }
+
+        .whatsapp-chat-box {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            max-width: 90vw;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .whatsapp-chat-box.active {
+            display: flex;
+        }
+
+        .whatsapp-header {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .whatsapp-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: white;
+            padding: 2px;
+        }
+
+        .whatsapp-header-info h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .whatsapp-header-info p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .whatsapp-chat-body {
+            padding: 15px;
+            background: #ECE5DD;
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .whatsapp-message {
+            background: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            color: #000;
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .whatsapp-chat-footer {
+            padding: 10px;
+            background: white;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .whatsapp-chat-footer input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            color: #333;
+        }
+
+        .whatsapp-chat-footer button {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .whatsapp-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp-chat-box {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                top: auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                transform: none !important;
+                border-radius: 20px 20px 0 0 !important;
+                z-index: 99999 !important;
+            }
+
+            .whatsapp-chat-body {
+                max-height: 50vh !important;
+            }
+        }
+
+        /* Catalog Page Specific Styles */
         body {
             background-color: #1a1a1a;
             color: #fff;
@@ -16,17 +175,13 @@
             font-family: system-ui, -apple-system, sans-serif;
         }
 
-        /* Fix logo size */
-        .navbar .logo img {
-            height: 50px;
-            width: auto;
-        }
-
-        /* Catalog Specific Styles */
         .catalog-page {
             min-height: 100vh;
             background-color: var(--color-primary);
-            padding: 100px 20px 50px;
+            padding-top: calc(var(--header-height) + 40px);
+            padding-bottom: 50px;
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         .catalog-header {
@@ -52,7 +207,6 @@
             gap: 2rem;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
         }
 
         .catalog-card {
@@ -149,7 +303,6 @@
             left: 0;
             z-index: 10001;
             pointer-events: none;
-            /* Allow clicks to pass through */
         }
 
         .modal-header h2 {
@@ -166,7 +319,6 @@
             align-items: center;
             justify-content: center;
             padding: 60px 20px 80px;
-            /* Space for header and controls */
             box-sizing: border-box;
         }
 
@@ -224,13 +376,11 @@
             color: #ddd;
         }
 
-        /* Loading */
         .loading-spinner {
             color: var(--color-gold);
             font-size: 2rem;
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .pdf-viewer-container {
                 padding: 60px 10px 90px;
@@ -239,7 +389,6 @@
             .modal-header h2 {
                 font-size: 1.2rem;
                 padding-right: 40px;
-                /* Space for close button */
             }
 
             .nav-btn {
@@ -249,14 +398,12 @@
 
             .nav-btn span {
                 display: none;
-                /* Hide text on small screens */
             }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="/logo.png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Removed turn.js dependency -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -264,30 +411,30 @@
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
+    <!-- Standard Header -->
+    <header class="header" id="header">
         <div class="container">
             <a href="/" class="logo">
-                <img src="/logo.png" alt="İzcan Logo" style="max-height: 50px; width: auto;">
-                <div>
-                    <h1>İZCAN</h1>
-                    <p>ORMAN ÜRÜNLERİ</p>
-                </div>
+                İZCAN
+                <span>ORMAN ÜRÜNLERİ</span>
             </a>
-            <ul class="nav-menu">
-                <li><a href="/">Ana Sayfa</a></li>
-                <li><a href="/products.html">Ürünler</a></li>
-                <li><a href="/catalog.html" class="active">Katalog</a></li>
-                <li><a href="/about.html">Hakkımızda</a></li>
-                <li><a href="/contact.html">İletişim</a></li>
-            </ul>
-            <button class="mobile-toggle" aria-label="Menu">
-                <i class="fas fa-bars"></i>
-            </button>
+            <nav class="nav-menu" id="nav-menu">
+                <a href="/" class="nav-link">Ana Sayfa</a>
+                <a href="/index.html#products" class="nav-link">Ürünler</a>
+                <a href="/catalog.html" class="nav-link active">Katalog</a>
+                <a href="/index.html#about" class="nav-link">Hakkımızda</a>
+                <a href="/index.html#gallery" class="nav-link">Galeri</a>
+                <a href="/index.html#contact" class="nav-link">İletişim</a>
+                <button class="btn btn-primary hidden-desktop">Teklif Al</button>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-primary show-desktop">Teklif Al</button>
+                <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">☰</button>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Catalog Page -->
+    <!-- Catalog Page Content -->
     <div class="catalog-page">
         <div class="catalog-header">
             <h1>Ürün Katalogları</h1>
@@ -325,49 +472,48 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Standard Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <div class="logo">
-                        <img src="/logo.png" alt="İzcan Logo" style="max-height: 40px; width: auto;">
-                        <div>
-                            <h3>İZCAN</h3>
-                            <p>ORMAN ÜRÜNLERİ</p>
-                        </div>
-                    </div>
-                    <p id="footer-description">Modern ve kaliteli orman ürünleri üreticisi</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Hızlı Linkler</h4>
-                    <ul>
-                        <li><a href="/">Ana Sayfa</a></li>
-                        <li><a href="/products.html">Ürünler</a></li>
-                        <li><a href="/catalog.html">Katalog</a></li>
-                        <li><a href="/about.html">Hakkımızda</a></li>
-                        <li><a href="/contact.html">İletişim</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>İletişim</h4>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Adres bilgisi</span></li>
-                        <li><i class="fas fa-phone"></i> <span id="footer-phone">Telefon</span></li>
-                        <li><i class="fas fa-envelope"></i> <span id="footer-email">E-posta</span></li>
-                    </ul>
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <a href="#" class="logo">İZCAN<span>ORMAN ÜRÜNLERİ</span></a>
+                <p class="mt-2">Kapı, dolap kapakları ve mobilya aksesuarlarında öncü üretim.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Hızlı Menü</h4>
+                <ul>
+                    <li><a href="/">Ana Sayfa</a></li>
+                    <li><a href="/index.html#products">Ürünler</a></li>
+                    <li><a href="/index.html#about">Hakkımızda</a></li>
+                    <li><a href="/index.html#contact">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Ürünler</h4>
+                <ul>
+                    <li><a href="#">Kapı Modelleri</a></li>
+                    <li><a href="#">Dolap Kapakları</a></li>
+                    <li><a href="#">Duvar Panelleri</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sosyal Medya</h4>
+                <div class="social-icons">
+                    <a href="#">IG</a>
+                    <a href="#">FB</a>
+                    <a href="#">LN</a>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 İzcan Orman Ürünleri. Tüm hakları saklıdır.</p>
-            </div>
+        </div>
+        <div class="footer-bottom text-center">
+            <p>&copy; 2024 İzcan Orman Ürünleri Ltd. Şti. Tüm hakları saklıdır.</p>
         </div>
     </footer>
 
     <!-- Initialize Supabase and Main Logic -->
     <script type="module" src="/main.js"></script>
 
-    <!-- Scripts - optimized paths -->
+    <!-- Scripts -->
     <script src="/catalog.js"></script>
     <script src="/whatsapp-widget.js"></script>
 </body>
