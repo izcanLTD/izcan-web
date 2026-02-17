@@ -35,6 +35,38 @@ async function initWhatsAppWidget() {
         console.error('WhatsApp widget error:', error);
     }
 
+    // Inject Mobile Specific CSS to bypass cache
+    const mobileStyle = document.createElement('style');
+    mobileStyle.innerHTML = `
+        @media (max-width: 768px) {
+            .whatsapp-chat-box {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                top: auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                height: auto !important;
+                margin: 0 !important;
+                transform: none !important;
+                border-radius: 20px 20px 0 0 !important;
+                box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3) !important;
+                z-index: 2147483647 !important;
+            }
+            .whatsapp-chat-body {
+                max-height: 40vh !important;
+                min-height: 200px !important;
+            }
+             .whatsapp-float {
+                z-index: 2147483646 !important;
+                bottom: 20px !important;
+                right: 20px !important;
+            }
+        }
+    `;
+    document.head.appendChild(mobileStyle);
+
     // Create widget HTML with forced black text
     const widget = document.createElement('div');
     widget.className = 'whatsapp-float';
