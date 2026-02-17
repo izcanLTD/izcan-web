@@ -385,11 +385,16 @@
             z-index: 10;
         }
 
-        /* Show icon on hover only on desktop (when body has no touch class, or simplistic approach) */
+        /* Show icon on hover only on desktop when NOT zoomed */
         @media (hover: hover) {
-            .pdf-viewer-container:hover .zoom-icon-overlay {
+            .pdf-viewer-container:not(.is-zoomed):hover .zoom-icon-overlay {
                 opacity: 1;
             }
+        }
+
+        /* Always hide icon when zoomed (redundant but safe) */
+        .pdf-viewer-container.is-zoomed .zoom-icon-overlay {
+            display: none;
         }
 
         /* Navigation Controls */

@@ -204,12 +204,9 @@ function resetZoom() {
     updateTransform();
 
     const container = document.querySelector('.pdf-viewer-container');
-    container.style.cursor = 'zoom-in';
-
-    const iconOverlay = document.getElementById('zoom-icon-overlay');
-    if (iconOverlay) {
-        iconOverlay.innerHTML = '<i class="fas fa-search-plus"></i>';
-        iconOverlay.style.opacity = '0'; // Hide by default, show on hover via CSS
+    if (container) {
+        container.style.cursor = 'zoom-in';
+        container.classList.remove('is-zoomed');
     }
 }
 
@@ -217,6 +214,9 @@ function toggleZoom(e) {
     // Determine click position relative to the canvas to zoom towards that point
     // For simplicity in this iteration, we just toggle zoom to center or last position
     // (Advanced point-zoom requires more math specific to the transform origin)
+
+    const container = document.querySelector('.pdf-viewer-container');
+    if (!container) return;
 
     if (isZoomed) {
         // Zoom out
@@ -227,13 +227,8 @@ function toggleZoom(e) {
         zoomScale = 2.5;
         updateTransform();
 
-        const container = document.querySelector('.pdf-viewer-container');
         container.style.cursor = 'grab';
-
-        const iconOverlay = document.getElementById('zoom-icon-overlay');
-        if (iconOverlay) {
-            iconOverlay.style.opacity = '0'; // Hide icon when zoomed
-        }
+        container.classList.add('is-zoomed');
     }
 }
 
