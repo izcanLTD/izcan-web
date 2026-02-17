@@ -340,19 +340,36 @@ document.getElementById('save-settings')?.addEventListener('click', async () => 
     const whatsappNumber = document.getElementById('whatsapp-number').value.trim();
     const whatsappGreeting = document.getElementById('whatsapp-greeting')?.value.trim() || 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?';
 
+    console.log('Saving WhatsApp settings:', { whatsappNumber, whatsappGreeting });
+
     try {
         // Save WhatsApp number
-        await supabase
+        const { data: numberData, error: numberError } = await supabase
             .from('site_content')
-            .upsert({ key: 'whatsapp_number', value: whatsappNumber });
+            .upsert({ key: 'whatsapp_number', value: whatsappNumber }, { onConflict: 'key' });
+
+        if (numberError) {
+            console.error('WhatsApp number save error:', numberError);
+            throw numberError;
+        }
+
+        console.log('WhatsApp number saved:', numberData);
 
         // Save WhatsApp greeting
-        await supabase
+        const { data: greetingData, error: greetingError } = await supabase
             .from('site_content')
-            .upsert({ key: 'whatsapp_greeting', value: whatsappGreeting });
+            .upsert({ key: 'whatsapp_greeting', value: whatsappGreeting }, { onConflict: 'key' });
+
+        if (greetingError) {
+            console.error('WhatsApp greeting save error:', greetingError);
+            throw greetingError;
+        }
+
+        console.log('WhatsApp greeting saved:', greetingData);
 
         alert('Ayarlar kaydedildi!');
     } catch (error) {
+        console.error('Save error:', error);
         alert('Hata: ' + error.message);
     }
 });
