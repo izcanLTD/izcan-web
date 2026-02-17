@@ -1,19 +1,73 @@
 /* WhatsApp Floating Chat Widget */
 let whatsappNumber = '';
+let greetingMessage = 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?';
 
 async function initWhatsAppWidget() {
-    // Load WhatsApp number from database
-    const { data } = await supabase
-        .from('site_content')
-        .select('value')
-        .eq('key', 'whatsapp_number')
-        .single();
-
-    if (data && data.value) {
-        whatsappNumber = data.value.replace(/[^0-9]/g, '');
+    // Wait for supabase to be available
+    if (!window.supabase) {
+        setTimeout(initWhatsAppWidget, 100);
+        return;
     }
 
-    // Create widget HTML
+    try {
+        // Load WhatsApp number from database
+        const { data: numberData } = await window.supabase
+            .from('site_content')
+            .select('value')
+            .eq('key', 'whatsapp_number')
+            .maybeSingle();
+
+        if (numberData && numberData.value) {
+            whatsappNumber = numberData.value.replace(/[^0-9]/g, '');
+        }
+
+        // Load greeting message
+        const { data: greetingData } = await window.supabase
+            .from('site_content')
+            .select('value')
+            .eq('key', 'whatsapp_greeting')
+            .maybeSingle();
+
+        if (greetingData && greetingData.value) {
+            greetingMessage = greetingData.value;
+        }
+    } catch (error) {
+        console.error('WhatsApp widget error:', error);
+    }
+
+    // Inject Mobile Specific CSS to bypass cache
+    const mobileStyle = document.createElement('style');
+    mobileStyle.innerHTML = `
+        @media (max-width: 768px) {
+            .whatsapp-chat-box {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                top: auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                height: auto !important;
+                margin: 0 !important;
+                transform: none !important;
+                border-radius: 20px 20px 0 0 !important;
+                box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3) !important;
+                z-index: 2147483647 !important;
+            }
+            .whatsapp-chat-body {
+                max-height: 40vh !important;
+                min-height: 200px !important;
+            }
+             .whatsapp-float {
+                z-index: 2147483646 !important;
+                bottom: 20px !important;
+                right: 20px !important;
+            }
+        }
+    `;
+    document.head.appendChild(mobileStyle);
+
+    // Create widget HTML with forced black text
     const widget = document.createElement('div');
     widget.className = 'whatsapp-float';
     widget.innerHTML = `
@@ -31,18 +85,36 @@ async function initWhatsAppWidget() {
             </div>
             <div class="whatsapp-chat-body">
                 <div class="whatsapp-message">
-                    Merhaba! 👋<br>
-                    Size nasıl yardımcı olabiliriz?
+                    ${greetingMessage}
                 </div>
             </div>
             <div class="whatsapp-chat-footer">
-                <input type="text" id="whatsapp-input" placeholder="Mesajınızı yazın..." />
+                <input type="text" id="whatsapp-input" placeholder="Mesajınızı yazın..." style="color: #000 !important;" />
                 <button id="whatsapp-send">Gönder</button>
             </div>
         </div>
     `;
 
     document.body.appendChild(widget);
+
+    // Force black text color with JavaScript after DOM insertion
+    setTimeout(() => {
+        const messageDiv = document.querySelector('.whatsapp-message');
+        if (messageDiv) {
+            messageDiv.style.setProperty('color', '#000', 'important');
+            messageDiv.style.setProperty('font-weight', '600', 'important');
+            // Also set color on all child elements
+            const allElements = messageDiv.querySelectorAll('*');
+            allElements.forEach(el => {
+                el.style.setProperty('color', '#000', 'important');
+            });
+        }
+
+        const inputField = document.getElementById('whatsapp-input');
+        if (inputField) {
+            inputField.style.setProperty('color', '#000', 'important');
+        }
+    }, 100);
 
     // Toggle chat box
     document.getElementById('whatsapp-toggle').addEventListener('click', () => {
