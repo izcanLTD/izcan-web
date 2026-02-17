@@ -1,0 +1,16 @@
+/* WhatsApp Widget Text Color Override */
+.whatsapp-message,
+.whatsapp-message *,
+.whatsapp-chat-body .whatsapp-message,
+div.whatsapp-message {
+    color: #000 !important;
+    font-weight: 600 !important;
+}
+
+.whatsapp-chat-footer input {
+    color: #000 !important;
+}
+
+.whatsapp-chat-footer input::placeholder {
+    color: #666 !important;
+}

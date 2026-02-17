@@ -35,7 +35,7 @@ async function initWhatsAppWidget() {
         console.error('WhatsApp widget error:', error);
     }
 
-    // Create widget HTML
+    // Create widget HTML with forced black text
     const widget = document.createElement('div');
     widget.className = 'whatsapp-float';
     widget.innerHTML = `
@@ -52,18 +52,37 @@ async function initWhatsAppWidget() {
                 <button class="whatsapp-close" id="whatsapp-close">&times;</button>
             </div>
             <div class="whatsapp-chat-body">
-                <div class="whatsapp-message" style="color: #000 !important; font-weight: 600 !important; background: white !important;">
+                <div class="whatsapp-message">
                     ${greetingMessage}
                 </div>
             </div>
             <div class="whatsapp-chat-footer">
-                <input type="text" id="whatsapp-input" placeholder="Mesajınızı yazın..." />
+                <input type="text" id="whatsapp-input" placeholder="Mesajınızı yazın..." style="color: #000 !important;" />
                 <button id="whatsapp-send">Gönder</button>
             </div>
         </div>
     `;
 
     document.body.appendChild(widget);
+
+    // Force black text color with JavaScript after DOM insertion
+    setTimeout(() => {
+        const messageDiv = document.querySelector('.whatsapp-message');
+        if (messageDiv) {
+            messageDiv.style.setProperty('color', '#000', 'important');
+            messageDiv.style.setProperty('font-weight', '600', 'important');
+            // Also set color on all child elements
+            const allElements = messageDiv.querySelectorAll('*');
+            allElements.forEach(el => {
+                el.style.setProperty('color', '#000', 'important');
+            });
+        }
+
+        const inputField = document.getElementById('whatsapp-input');
+        if (inputField) {
+            inputField.style.setProperty('color', '#000', 'important');
+        }
+    }, 100);
 
     // Toggle chat box
     document.getElementById('whatsapp-toggle').addEventListener('click', () => {
