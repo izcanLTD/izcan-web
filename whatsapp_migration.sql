@@ -5,14 +5,14 @@
 DELETE FROM site_content WHERE key = 'social_linkedin';
 
 -- Add WhatsApp number field
-INSERT INTO site_content (key, value, created_at, updated_at)
-VALUES ('whatsapp_number', '', NOW(), NOW())
-ON CONFLICT (key) DO NOTHING;
+INSERT INTO site_content (key, value)
+VALUES ('whatsapp_number', '')
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 -- Add WhatsApp greeting message field
-INSERT INTO site_content (key, value, created_at, updated_at)
-VALUES ('whatsapp_greeting', 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?', NOW(), NOW())
-ON CONFLICT (key) DO NOTHING;
+INSERT INTO site_content (key, value)
+VALUES ('whatsapp_greeting', 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?')
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 -- Verify the changes
 SELECT key, value FROM site_content WHERE key IN ('whatsapp_number', 'whatsapp_greeting');
