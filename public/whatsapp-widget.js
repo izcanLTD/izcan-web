@@ -67,11 +67,11 @@ async function initWhatsAppWidget() {
     `;
     document.head.appendChild(mobileStyle);
 
-    // Create widget HTML with forced black text
+    // Create widget container (neutral wrapper)
     const widget = document.createElement('div');
-    widget.className = 'whatsapp-float';
+    widget.className = 'whatsapp-widget-wrapper';
     widget.innerHTML = `
-        <div class="whatsapp-button" id="whatsapp-toggle">
+        <div class="whatsapp-float" id="whatsapp-toggle">
             <i class="fab fa-whatsapp"></i>
         </div>
         <div class="whatsapp-chat-box" id="whatsapp-chat">
