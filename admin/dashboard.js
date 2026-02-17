@@ -313,23 +313,49 @@ if (addGalleryForm) {
         } catch (err) { alert('Hata: ' + err.message); }
         finally { submitBtn.disabled = false; submitBtn.textContent = 'Kaydet'; }
     });
+
     // Load WhatsApp number
     const { data: whatsappData } = await supabase
         .from('site_content')
         .select('value')
         .eq('key', 'whatsapp_number')
-        .single();
+        .maybeSingle();
     if (whatsappData) {
         document.getElementById('whatsapp-number').value = whatsappData.value || '';
     }
+
+    // Load WhatsApp greeting
+    const { data: greetingData } = await supabase
+        .from('site_content')
+        .select('value')
+        .eq('key', 'whatsapp_greeting')
+        .maybeSingle();
+    if (greetingData) {
+        document.getElementById('whatsapp-greeting').value = greetingData.value || 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?';
+    }
+}
+
+// Save Settings Button Handler
+document.getElementById('save-settings')?.addEventListener('click', async () => {
     const whatsappNumber = document.getElementById('whatsapp-number').value.trim();
-    // Save WhatsApp number
-    if (whatsappNumber) {
+    const whatsappGreeting = document.getElementById('whatsapp-greeting')?.value.trim() || 'Merhaba! 👋<br>Size nasıl yardımcı olabiliriz?';
+
+    try {
+        // Save WhatsApp number
         await supabase
             .from('site_content')
             .upsert({ key: 'whatsapp_number', value: whatsappNumber });
+
+        // Save WhatsApp greeting
+        await supabase
+            .from('site_content')
+            .upsert({ key: 'whatsapp_greeting', value: whatsappGreeting });
+
+        alert('Ayarlar kaydedildi!');
+    } catch (error) {
+        alert('Hata: ' + error.message);
     }
-}
+});
 
 
 /* ---------------- GLOBAL EVENTS ---------------- */
