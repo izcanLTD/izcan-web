@@ -16,6 +16,12 @@
             font-family: system-ui, -apple-system, sans-serif;
         }
 
+        /* Fix logo size */
+        .navbar .logo img {
+            height: 50px;
+            width: auto;
+        }
+
         /* Catalog Specific Styles */
         .catalog-page {
             min-height: 100vh;
@@ -262,7 +268,7 @@
     <nav class="navbar">
         <div class="container">
             <a href="/" class="logo">
-                <img src="/logo.png" alt="İzcan Logo">
+                <img src="/logo.png" alt="İzcan Logo" style="max-height: 50px; width: auto;">
                 <div>
                     <h1>İZCAN</h1>
                     <p>ORMAN ÜRÜNLERİ</p>
@@ -325,7 +331,7 @@
             <div class="footer-grid">
                 <div class="footer-col">
                     <div class="logo">
-                        <img src="/logo.png" alt="İzcan Logo">
+                        <img src="/logo.png" alt="İzcan Logo" style="max-height: 40px; width: auto;">
                         <div>
                             <h3>İZCAN</h3>
                             <p>ORMAN ÜRÜNLERİ</p>
@@ -358,10 +364,10 @@
         </div>
     </footer>
 
-    <script src="./script.js"></script>
+    <!-- Initialize Supabase and Main Logic -->
+    <script type="module" src="/main.js"></script>
+
     <script src="./public/catalog.js"></script>
-    <!-- catalog-zoom.js removed (not needed for single page view) -->
-    <script src="./supabase-init.js"></script>
     <script src="./public/whatsapp-widget.js"></script>
 </body>
 
