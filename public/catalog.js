@@ -31,9 +31,14 @@ async function loadCatalogs() {
             const card = document.createElement('div');
             card.className = 'catalog-card';
             card.innerHTML = `
-                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fa-solid fa-file-pdf" style="font-size: 4rem; color: #c9a961;"></i>
-                </div>
+                ${catalog.thumbnail_url
+                    ? `<div style="height: 300px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000;">
+                         <img src="${catalog.thumbnail_url}" alt="${catalog.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                       </div>`
+                    : `<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); height: 300px; display: flex; align-items: center; justify-content: center;">
+                         <i class="fa-solid fa-file-pdf" style="font-size: 4rem; color: #c9a961;"></i>
+                       </div>`
+                }
                 <div class="catalog-card-content">
                     <h3>${catalog.name}</h3>
                     <p>${catalog.total_pages || 0} sayfa</p>
