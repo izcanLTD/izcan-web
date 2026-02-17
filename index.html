@@ -20,7 +20,191 @@
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="./product-modal.css">
-  <link rel="stylesheet" href="./whatsapp-widget.css">
+  <style>
+    /* WhatsApp Widget CSS - Inlined for reliability */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+    }
+
+    .whatsapp-float i {
+      color: white;
+      font-size: 30px;
+    }
+
+    .whatsapp-chat-box {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 350px;
+      max-width: 90vw;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: -apple-system, system-ui, sans-serif;
+    }
+
+    .whatsapp-chat-box.active {
+      display: flex;
+    }
+
+    /* Corrected class name to match JS (whatsapp-chat-header) */
+    .whatsapp-chat-header {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: white;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    /* Constrain logo size */
+    .whatsapp-chat-header img {
+      width: 40px !important;
+      height: 40px !important;
+      max-width: 40px !important;
+      border-radius: 50%;
+      object-fit: cover;
+      background: white;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Corrected class name to match JS (whatsapp-chat-header-info) */
+    .whatsapp-chat-header-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .whatsapp-chat-header-info h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: white !important;
+    }
+
+    .whatsapp-chat-header-info p {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.9;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .whatsapp-chat-body {
+      padding: 15px;
+      background: #ECE5DD;
+      min-height: 150px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .whatsapp-message {
+      background: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      color: #000;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 1.4;
+      align-self: flex-start;
+      max-width: 85%;
+    }
+
+    .whatsapp-chat-footer {
+      padding: 10px;
+      background: white;
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid #eee;
+      align-items: center;
+    }
+
+    .whatsapp-chat-footer input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      outline: none;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .whatsapp-chat-footer button {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .whatsapp-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: white !important;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      width: auto;
+      height: auto;
+    }
+
+    @media (max-width: 768px) {
+      .whatsapp-chat-box {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        transform: none !important;
+        border-radius: 20px 20px 0 0 !important;
+        box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.2) !important;
+        z-index: 99999 !important;
+      }
+
+      .whatsapp-chat-body {
+        max-height: 50vh !important;
+      }
+    }
+  </style>
 
 
 <body>
