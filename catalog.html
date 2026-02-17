@@ -110,7 +110,7 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            padding: 40px 20px;
+            padding: 20px 10px;
         }
 
         .modal-close {
@@ -143,8 +143,10 @@
 
         .flipbook-container {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 90vw;
+            max-width: 800px;
+            height: 70vh;
+            max-height: 600px;
             margin: 0 auto;
         }
 
@@ -242,13 +244,15 @@
 
         @media (max-width: 650px) {
             .flipbook-container {
-                width: 400px;
-                height: 300px;
+                width: 95vw;
+                height: 60vh;
+                max-width: none;
+                max-height: none;
             }
 
             #flipbook .page {
-                width: 200px;
-                height: 300px;
+                width: 47.5vw;
+                height: 60vh;
             }
 
             .catalogs-grid {
@@ -257,6 +261,11 @@
 
             .modal-title {
                 font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .catalog-modal.active {
+                padding: 10px 5px;
             }
         }
     </style>
